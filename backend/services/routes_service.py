@@ -18,19 +18,25 @@ try:
     crime_df = pd.read_csv(os.path.join(DATA_DIR, 'bangalore_crimes.csv'))
     lighting_df = pd.read_csv(os.path.join(DATA_DIR, 'bangalore_lighting.csv'))
     population_df = pd.read_csv(os.path.join(DATA_DIR, 'bangalore_population.csv'))
+    infrastructure_df = pd.read_csv(os.path.join(DATA_DIR, 'bangalore_nearby_infrastructure.csv'))
+    network_df = pd.read_csv(os.path.join(DATA_DIR, 'bangalore_network_connectivity.csv'))
     
     # Initialize KDTrees for fast spatial querying - Use capitalized Latitude/Longitude
     crime_tree = KDTree(crime_df[['Latitude', 'Longitude']].values) if not crime_df.empty else None
     lighting_tree = KDTree(lighting_df[['Latitude', 'Longitude']].values) if not lighting_df.empty else None
     population_tree = KDTree(population_df[['Latitude', 'Longitude']].values) if not population_df.empty else None
+    infrastructure_tree = KDTree(infrastructure_df[['Latitude', 'Longitude']].values) if not infrastructure_df.empty else None
+    network_tree = KDTree(network_df[['Latitude', 'Longitude']].values) if not network_df.empty else None
     
-    print(f"CSV data loaded and indexed - Crime: {len(crime_df)} rows, Lighting: {len(lighting_df)} rows, Population: {len(population_df)} rows")
+    print(f"CSV data loaded and indexed - Crime: {len(crime_df)} rows, Lighting: {len(lighting_df)} rows, Population: {len(population_df)} rows, Infrastructure: {len(infrastructure_df)} rows, Network: {len(network_df)} rows")
 except Exception as e:
     print(f"Error loading CSV data: {e}")
     crime_df = pd.DataFrame(columns=['Latitude', 'Longitude', 'Crime type'])
     lighting_df = pd.DataFrame(columns=['Latitude', 'Longitude', 'lighting_score'])
     population_df = pd.DataFrame(columns=['Latitude', 'Longitude', 'population_density'])
-    crime_tree = lighting_tree = population_tree = None
+    infrastructure_df = pd.DataFrame(columns=['Latitude', 'Longitude', 'infrastructure_score', 'area', 'infrastructure_type'])
+    network_df = pd.DataFrame(columns=['Latitude', 'Longitude', 'network_score', 'area', 'network_type'])
+    crime_tree = lighting_tree = population_tree = infrastructure_tree = network_tree = None
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -205,6 +211,38 @@ def calculate_population_score_at_point(lat, lon, radius=0.005):
     return avg_pop, is_main_road
 
 
+def calculate_infrastructure_score_at_point(lat, lon, radius=0.005):
+    """Get infrastructure score within a radius (default ~500m)"""
+    if infrastructure_tree is None:
+        return 5.0, 'Unknown'  # Score, Type
+    
+    indices = infrastructure_tree.query_ball_point([lat, lon], radius)
+    if not indices:
+        return 5.0, 'Unknown'
+    
+    relevant_data = infrastructure_df.iloc[indices]
+    avg_score = relevant_data['infrastructure_score'].mean()
+    infra_type = relevant_data['infrastructure_type'].mode()[0] if len(relevant_data) > 0 else 'Unknown'
+    
+    return avg_score, infra_type
+
+
+def calculate_network_score_at_point(lat, lon, radius=0.005):
+    """Get network connectivity score within a radius (default ~500m)"""
+    if network_tree is None:
+        return 5.0, 'Unknown'  # Score, Type
+    
+    indices = network_tree.query_ball_point([lat, lon], radius)
+    if not indices:
+        return 5.0, 'Unknown'
+    
+    relevant_data = network_df.iloc[indices]
+    avg_score = relevant_data['network_score'].mean()
+    network_type = relevant_data['network_type'].mode()[0] if len(relevant_data) > 0 else 'Unknown'
+    
+    return avg_score, network_type
+
+
 def calculate_crime_score(route_coordinates):
     """Calculate average crime exposure for a route"""
     if crime_df.empty:
@@ -281,7 +319,7 @@ def check_flagged_zones(route_coordinates, flagged_zones):
 
 
 def calculate_route_safety_comprehensive(route, flagged_zones=[]):
-    """Evaluate route safety with point sampling, hotspot penalties, and max exposure"""
+    """Evaluate route safety with point sampling, hotspot penalties, and max exposure - NOW WITH INFRASTRUCTURE & NETWORK"""
     coordinates = route['geometry']['coordinates']
     
     # Sampling: every ~50 segments/points
@@ -291,11 +329,18 @@ def calculate_route_safety_comprehensive(route, flagged_zones=[]):
     point_scores = []
     hotspots_count = 0
     max_exposure = 0
+    infrastructure_scores = []
+    network_scores = []
     
     for lon, lat in sample_points:
         crime_count = calculate_crime_exposure(lat, lon)
         lighting = calculate_lighting_score_at_point(lat, lon)
         pop, _ = calculate_population_score_at_point(lat, lon)
+        infra_score, _ = calculate_infrastructure_score_at_point(lat, lon)
+        network_score, _ = calculate_network_score_at_point(lat, lon)
+        
+        infrastructure_scores.append(infra_score)
+        network_scores.append(network_score)
         
         # Point safety calculation
         # Crime is primary threat (0 to 1, where 1 is dangerous)
@@ -305,9 +350,16 @@ def calculate_route_safety_comprehensive(route, flagged_zones=[]):
             
         max_exposure = max(max_exposure, point_crime_risk)
         
-        # Point score (higher is safer)
-        # 10 is perfect, 0 is dangerous
-        p_score = (1 - point_crime_risk) * 6 + (lighting / 2.0) + (min(pop / 15000, 1.0) * 1.0)
+        # Enhanced Point score with infrastructure and network (higher is safer)
+        # Base: Crime (6 points) + Lighting (2 points) + Population (1 point)
+        # NEW: Infrastructure (0.5 points) + Network (0.5 points) = 10 total
+        p_score = (
+            (1 - point_crime_risk) * 6 + 
+            (lighting / 2.0) + 
+            (min(pop / 15000, 1.0) * 1.0) +
+            (infra_score / 10.0 * 0.5) +  # Infrastructure contributes 0.5 points
+            (network_score / 10.0 * 0.5)   # Network contributes 0.5 points
+        )
         point_scores.append(p_score)
         
     avg_safety = sum(point_scores) / len(point_scores) if point_scores else 5.0
@@ -318,11 +370,17 @@ def calculate_route_safety_comprehensive(route, flagged_zones=[]):
     
     final_safety_score = max(0, min(100, (avg_safety * 10) - (penalty * 10)))
     
+    # Calculate averages for infrastructure and network
+    avg_infrastructure = sum(infrastructure_scores) / len(infrastructure_scores) if infrastructure_scores else 5.0
+    avg_network = sum(network_scores) / len(network_scores) if network_scores else 5.0
+    
     return {
         'safety_score': round(final_safety_score, 1),
         'hotspots': hotspots_count,
         'max_exposure': round(max_exposure, 2),
-        'avg_lighting': round(sum([calculate_lighting_score_at_point(lat, lon) for lon, lat in sample_points]) / len(sample_points), 1) if sample_points else 5.0
+        'avg_lighting': round(sum([calculate_lighting_score_at_point(lat, lon) for lon, lat in sample_points]) / len(sample_points), 1) if sample_points else 5.0,
+        'avg_infrastructure': round(avg_infrastructure, 1),
+        'avg_network': round(avg_network, 1)
     }
 
 
@@ -405,21 +463,75 @@ def calculate_safe_routes(start_lat, start_lon, end_lat, end_lon, flagged_zones=
             pop = calculate_population_score(r['route']['geometry']['coordinates'])
             pop_routes.append((r, pop))
         high_pop_route = max(pop_routes, key=lambda x: x[1])[0]
+        
+        def get_nearby_landmark(lat, lon, radius=0.01):
+            """Get nearby landmark from infrastructure data"""
+            if infrastructure_tree is None:
+                return None
+            
+            indices = infrastructure_tree.query_ball_point([lat, lon], radius)
+            if not indices:
+                return None
+            
+            # Get the closest landmark
+            relevant_data = infrastructure_df.iloc[indices]
+            if len(relevant_data) > 0:
+                # Get the first one with an area name
+                for idx in indices[:3]:  # Check first 3 closest
+                    row = infrastructure_df.iloc[idx]
+                    if pd.notna(row.get('area')) and row.get('area') != 'Unknown':
+                        # Calculate distance to this landmark
+                        dist_km = haversine_distance(lat, lon, row['Latitude'], row['Longitude'])
+                        dist_m = int(dist_km * 1000)
+                        return f"{row.get('area', 'landmark')} ({dist_m}m)"
+            return None
 
         def format_route(r, category, label):
             crime_incidents = int(r['metrics'].get('hotspots', 0) * 2 + (r['metrics'].get('max_exposure', 0) * 5))
             
-            # Extract navigation steps
+            # Extract navigation steps with enhanced landmark information and distances
             steps = []
             if 'legs' in r['route']:
                 for leg in r['route']['legs']:
                     if 'steps' in leg:
                         for step in leg['steps']:
+                            base_instruction = step.get('maneuver', {}).get('instruction', 'Continue')
+                            location = step.get('maneuver', {}).get('location', [])
+                            distance = step.get('distance', 0)
+                            
+                            # Format distance for instruction
+                            if distance > 1000:
+                                dist_str = f"{(distance / 1000):.1f} km"
+                            else:
+                                dist_str = f"{int(distance)} m"
+                            
+                            # Enhance instruction with distance
+                            enhanced_instruction = base_instruction
+                            
+                            # Add distance to the instruction
+                            if 'Continue' in base_instruction:
+                                enhanced_instruction = base_instruction.replace('Continue', f'Continue for {dist_str}')
+                            elif 'Head' in base_instruction:
+                                enhanced_instruction = f"{base_instruction} for {dist_str}"
+                            else:
+                                # For turns, add "then continue"
+                                enhanced_instruction = f"{base_instruction}, then continue for {dist_str}"
+                            
+                            # Try to enhance with nearby landmark
+                            if location and len(location) == 2:
+                                landmark = get_nearby_landmark(location[1], location[0])
+                                if landmark:
+                                    # Add landmark to instruction
+                                    if 'Continue' in base_instruction or 'Head' in base_instruction:
+                                        enhanced_instruction = f"{enhanced_instruction} towards {landmark}"
+                                    else:
+                                        enhanced_instruction = f"{enhanced_instruction} near {landmark}"
+                            
                             steps.append({
-                                'instruction': step.get('maneuver', {}).get('instruction', 'Continue'),
-                                'distance': step.get('distance', 0),
+                                'instruction': enhanced_instruction,
+                                'distance': distance,
                                 'duration': step.get('duration', 0),
-                                'location': step.get('maneuver', {}).get('location', [])
+                                'location': location
                             })
 
             return {
@@ -429,6 +541,8 @@ def calculate_safe_routes(start_lat, start_lon, end_lat, end_lon, flagged_zones=
                 'safety_score': float(r['metrics']['safety_score']),
                 'crime_incidents': crime_incidents,
                 'lighting_score': float(r['metrics'].get('avg_lighting', 5.0) * 10),
+                'infrastructure_score': float(r['metrics'].get('avg_infrastructure', 5.0) * 10),
+                'network_score': float(r['metrics'].get('avg_network', 5.0) * 10),
                 'population_score': 15000, # Legacy field
                 'crime_score': (100 - float(r['metrics']['safety_score'])) / 100, # Legacy field
                 'type': category,

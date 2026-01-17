@@ -324,20 +324,23 @@ const SafeRoutes = () => {
                         </div>
                     </div>
 
-                    {/* Preferences */}
+                    {/* Enhanced Preferences */}
                     <div style={{ marginTop: 'var(--space-xl)' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)', cursor: 'pointer' }}>
-                            <input type="checkbox" checked={preferMainRoads} onChange={(e) => setPreferMainRoads(e.target.checked)} />
-                            <span style={{ fontSize: 'var(--font-size-sm)' }}>🛣️ Prefer Main Roads</span>
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)', cursor: 'pointer' }}>
-                            <input type="checkbox" checked={preferWellLit} onChange={(e) => setPreferWellLit(e.target.checked)} />
-                            <span style={{ fontSize: 'var(--font-size-sm)' }}>💡 Prefer Well-Lit Areas</span>
-                        </label>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)', cursor: 'pointer' }}>
-                            <input type="checkbox" checked={preferPopulated} onChange={(e) => setPreferPopulated(e.target.checked)} />
-                            <span style={{ fontSize: 'var(--font-size-sm)' }}>👥 Prefer Populated Areas</span>
-                        </label>
+                        <h4 style={{ fontSize: 'var(--font-size-base)', marginBottom: 'var(--space-md)' }}>Route Preferences</h4>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm)', background: preferMainRoads ? '#F3E8FF' : 'transparent', borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                <input type="checkbox" checked={preferMainRoads} onChange={(e) => setPreferMainRoads(e.target.checked)} style={{ accentColor: 'var(--primary)' }} />
+                                <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: preferMainRoads ? '600' : '400' }}>🛣️ Prefer Main Roads</span>
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm)', background: preferWellLit ? '#FEF3C7' : 'transparent', borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                <input type="checkbox" checked={preferWellLit} onChange={(e) => setPreferWellLit(e.target.checked)} style={{ accentColor: '#F59E0B' }} />
+                                <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: preferWellLit ? '600' : '400' }}>💡 Prefer Well-Lit Areas</span>
+                            </label>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm)', background: preferPopulated ? '#DBEAFE' : 'transparent', borderRadius: 'var(--radius-md)', cursor: 'pointer', transition: 'all 0.2s' }}>
+                                <input type="checkbox" checked={preferPopulated} onChange={(e) => setPreferPopulated(e.target.checked)} style={{ accentColor: '#3B82F6' }} />
+                                <span style={{ fontSize: 'var(--font-size-sm)', fontWeight: preferPopulated ? '600' : '400' }}>👥 Prefer Populated Areas</span>
+                            </label>
+                        </div>
                     </div>
 
                     {/* Calculate Button */}
@@ -371,19 +374,33 @@ const SafeRoutes = () => {
                                 attribution='&copy; OpenStreetMap contributors'
                             />
 
-                            {/* Draw routes */}
-                            {routes.map((route, idx) => (
-                                route.geometry && route.geometry.coordinates && (
-                                    <Polyline
-                                        key={idx}
-                                        positions={route.geometry.coordinates.map(coord => [coord[1], coord[0]])}
-                                        color={navigatingRoute && navigatingRoute.label !== route.label ? '#D1D5DB' : route.color}
-                                        weight={navigatingRoute && navigatingRoute.label === route.label ? 8 : 5}
-                                        opacity={navigatingRoute && navigatingRoute.label !== route.label ? 0.4 : 0.8}
-                                        dashArray={getRouteStyle(route.style)}
-                                    />
-                                )
-                            ))}
+                            {/* Draw routes with enhanced highlighting for navigation */}
+                            {routes.map((route, idx) => {
+                                const isNavigating = navigatingRoute && navigatingRoute.label === route.label;
+                                const isOtherRoute = navigatingRoute && navigatingRoute.label !== route.label;
+                                
+                                return route.geometry && route.geometry.coordinates && (
+                                    <React.Fragment key={idx}>
+                                        {/* Shadow/glow effect for navigating route */}
+                                        {isNavigating && (
+                                            <Polyline
+                                                positions={route.geometry.coordinates.map(coord => [coord[1], coord[0]])}
+                                                color={route.color}
+                                                weight={14}
+                                                opacity={0.3}
+                                            />
+                                        )}
+                                        {/* Main route line */}
+                                        <Polyline
+                                            positions={route.geometry.coordinates.map(coord => [coord[1], coord[0]])}
+                                            color={isOtherRoute ? '#D1D5DB' : route.color}
+                                            weight={isNavigating ? 10 : isOtherRoute ? 4 : 6}
+                                            opacity={isOtherRoute ? 0.3 : isNavigating ? 1 : 0.8}
+                                            dashArray={isNavigating ? null : getRouteStyle(route.style)}
+                                        />
+                                    </React.Fragment>
+                                );
+                            })}
 
                             {/* Car marker for navigation */}
                             {navigatingRoute && carPosition && (
@@ -496,8 +513,8 @@ const SafeRoutes = () => {
                             ))}
                         </MapContainer>
 
-                        {/* Directions Overlay */}
-                        {activeRouteForDirections && (
+                        {/* Enhanced Directions Overlay with Navigation Support */}
+                        {(activeRouteForDirections || navigatingRoute) && (
                             <motion.div
                                 initial={{ x: -100, opacity: 0 }}
                                 animate={{ x: 20, opacity: 1 }}
@@ -505,64 +522,118 @@ const SafeRoutes = () => {
                                     position: 'absolute',
                                     top: '20px',
                                     left: '0px',
-                                    width: '320px',
-                                    maxHeight: '80%',
+                                    width: '350px',
+                                    maxHeight: '85%',
                                     background: 'white',
                                     zIndex: 1000,
                                     borderRadius: '16px',
-                                    boxShadow: '0 10px 25px rgba(0,0,0,0.15)',
+                                    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    border: '2px solid var(--primary-light)'
+                                    border: `3px solid ${navigatingRoute?.color || activeRouteForDirections?.color || 'var(--primary-light)'}`
                                 }}
                             >
-                                <div style={{ padding: '16px', borderBottom: '1px solid var(--gray-200)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--gray-50)', borderTopLeftRadius: '14px', borderTopRightRadius: '14px' }}>
-                                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        🧭 Turn-by-Turn Directions
+                                <div style={{ padding: '16px', borderBottom: '1px solid var(--gray-200)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: navigatingRoute ? `linear-gradient(135deg, ${navigatingRoute.color} 0%, ${navigatingRoute.color}dd 100%)` : 'var(--gray-50)', borderTopLeftRadius: '14px', borderTopRightRadius: '14px' }}>
+                                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: navigatingRoute ? 'white' : 'var(--gray-900)' }}>
+                                        {navigatingRoute ? '🚗 Navigating' : '🧭 Directions'}
                                     </h3>
                                     <button
-                                        onClick={() => setActiveRouteForDirections(null)}
-                                        style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: 'var(--gray-500)' }}
+                                        onClick={() => {
+                                            setActiveRouteForDirections(null);
+                                            setNavigatingRoute(null);
+                                        }}
+                                        style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: navigatingRoute ? 'white' : 'var(--gray-500)' }}
                                     >×</button>
                                 </div>
+                                
+                                {navigatingRoute && (
+                                    <div style={{ padding: '12px', background: `${navigatingRoute.color}15`, borderBottom: `1px solid ${navigatingRoute.color}40`, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ fontSize: '24px', animation: 'pulse 2s ease-in-out infinite' }}>📍</div>
+                                        <div style={{ flex: 1 }}>
+                                            <div style={{ fontSize: '12px', color: navigatingRoute.color, fontWeight: '600' }}>Active Navigation</div>
+                                            <div style={{ fontSize: '14px', fontWeight: '700', color: navigatingRoute.color }}>{navigatingRoute.label}</div>
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 <div style={{ overflowY: 'auto', padding: '16px' }}>
-                                    {activeRouteForDirections.steps && activeRouteForDirections.steps.length > 0 ? (
-                                        activeRouteForDirections.steps.map((step, sIdx) => (
-                                            <div key={sIdx} style={{ display: 'flex', gap: '16px', marginBottom: '20px', borderLeft: '3px solid #8B5CF6', paddingLeft: '12px' }}>
-                                                <div style={{ background: '#F3E8FF', color: '#8B5CF6', width: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyCenter: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
-                                                    {sIdx + 1}
-                                                </div>
-                                                <div>
-                                                    <p style={{ fontSize: '14px', margin: '0 0 4px 0', color: 'var(--gray-800)' }}>{step.instruction}</p>
-                                                    <p style={{ fontSize: '12px', margin: 0, color: 'var(--gray-500)', fontWeight: 600 }}>
-                                                        {step.distance > 1000 ? `${(step.distance / 1000).toFixed(1)} km` : `${Math.round(step.distance)} m`}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        ))
+                                    {(navigatingRoute || activeRouteForDirections) && (navigatingRoute?.steps || activeRouteForDirections?.steps)?.length > 0 ? (
+                                        (navigatingRoute?.steps || activeRouteForDirections?.steps).map((step, sIdx) => {
+                                            const routeColor = navigatingRoute?.color || activeRouteForDirections?.color || '#8B5CF6';
+                                            return (
+                                                <motion.div 
+                                                    key={sIdx} 
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: sIdx * 0.05 }}
+                                                    style={{ 
+                                                        display: 'flex', 
+                                                        gap: '12px', 
+                                                        marginBottom: '16px', 
+                                                        borderLeft: `4px solid ${routeColor}`, 
+                                                        paddingLeft: '12px',
+                                                        background: navigatingRoute ? `${routeColor}10` : 'transparent',
+                                                        padding: '12px',
+                                                        borderRadius: '8px'
+                                                    }}
+                                                >
+                                                    <div style={{ background: navigatingRoute ? routeColor : `${routeColor}20`, color: navigatingRoute ? 'white' : routeColor, minWidth: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+                                                        {sIdx + 1}
+                                                    </div>
+                                                    <div style={{ flex: 1 }}>
+                                                        <p style={{ fontSize: '14px', margin: '0 0 6px 0', color: 'var(--gray-800)', fontWeight: '500', lineHeight: '1.4' }}>
+                                                            {step.instruction}
+                                                        </p>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                            <span style={{ fontSize: '12px', color: routeColor, fontWeight: 700, background: `${routeColor}20`, padding: '2px 8px', borderRadius: '4px' }}>
+                                                                📏 {step.distance > 1000 ? `${(step.distance / 1000).toFixed(1)} km` : `${Math.round(step.distance)} m`}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </motion.div>
+                                            );
+                                        })
                                     ) : (
-                                        <p style={{ fontSize: '14px', textAlign: 'center', color: 'var(--gray-500)' }}>No step-by-step directions available for this route.</p>
+                                        <p style={{ fontSize: '14px', textAlign: 'center', color: 'var(--gray-500)', padding: 'var(--space-xl)' }}>
+                                            No step-by-step directions available for this route.
+                                        </p>
                                     )}
                                 </div>
                             </motion.div>
                         )}
                     </div>
 
-                    {/* Route Cards */}
+                    {/* Route Cards - 3 per row flex layout */}
                     {routes.length > 0 && (
-                        <div style={{ height: '280px', overflowY: 'auto', background: 'var(--gray-50)', borderTop: '2px solid var(--gray-300)', padding: 'var(--space-lg)', display: 'flex', gap: 'var(--space-lg)', overflowX: 'auto' }}>
-                            {routes.map((route, idx) => (
-                                <div
-                                    key={idx}
-                                    style={{
-                                        minWidth: '240px',
-                                        background: 'white',
-                                        borderRadius: 'var(--radius-lg)',
-                                        padding: 'var(--space-lg)',
-                                        border: `3px solid ${route.color}`,
-                                        boxShadow: 'var(--shadow-xl)'
-                                    }}
-                                >
+                        <div style={{ 
+                            background: 'var(--gray-50)', 
+                            borderTop: '2px solid var(--gray-300)', 
+                            padding: 'var(--space-xl)',
+                            overflowY: 'auto',
+                            maxHeight: '400px'
+                        }}>
+                            <div style={{ 
+                                display: 'flex', 
+                                flexWrap: 'wrap', 
+                                gap: 'var(--space-lg)',
+                                justifyContent: 'flex-start'
+                            }}>
+                                {routes.map((route, idx) => (
+                                    <div
+                                        key={idx}
+                                        style={{
+                                            flex: '1 1 calc(33.333% - var(--space-lg))',
+                                            minWidth: '280px',
+                                            maxWidth: 'calc(33.333% - var(--space-lg))',
+                                            background: 'white',
+                                            borderRadius: 'var(--radius-xl)',
+                                            padding: 'var(--space-lg)',
+                                            border: `3px solid ${route.color}`,
+                                            boxShadow: navigatingRoute?.label === route.label ? `0 8px 30px ${route.color}40` : 'var(--shadow-lg)',
+                                            transform: navigatingRoute?.label === route.label ? 'scale(1.02)' : 'scale(1)',
+                                            transition: 'all 0.3s ease'
+                                        }}
+                                    >
                                     <div style={{ marginBottom: 'var(--space-md)' }}>
                                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-sm)' }}>
                                             <h4 style={{ fontSize: 'var(--font-size-lg)', marginBottom: 0, fontWeight: 700 }}>{route.label}</h4>
@@ -594,8 +665,39 @@ const SafeRoutes = () => {
                                         <strong>Duration:</strong> {Math.round((route.duration || 600) / 60)} min
                                     </div>
 
-                                    <div style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)', padding: 'var(--space-sm)', background: route.safety_score >= 80 ? '#D1FAE5' : '#FEF3C7', borderRadius: 'var(--radius-sm)' }}>
-                                        <strong>Crime Exposure:</strong> {getCrimeLevel(route.safety_score)} ({route.crime_incidents || 0} incidents)
+                                    {/* Enhanced Metrics Grid */}
+                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                                        {/* Crime Exposure */}
+                                        <div style={{ padding: 'var(--space-sm)', background: route.safety_score >= 80 ? '#D1FAE5' : '#FEF3C7', borderRadius: 'var(--radius-md)', borderLeft: `3px solid ${route.safety_score >= 80 ? '#10B981' : '#F59E0B'}` }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: '2px' }}>🚨 Crime</div>
+                                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'bold', color: route.safety_score >= 80 ? '#059669' : '#D97706' }}>
+                                                {getCrimeLevel(route.safety_score)}
+                                            </div>
+                                        </div>
+
+                                        {/* Lighting Score */}
+                                        <div style={{ padding: 'var(--space-sm)', background: '#FEF3C7', borderRadius: 'var(--radius-md)', borderLeft: '3px solid #F59E0B' }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: '2px' }}>💡 Lighting</div>
+                                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'bold', color: '#D97706' }}>
+                                                {route.lighting_score ? `${Math.round(route.lighting_score)}/100` : 'N/A'}
+                                            </div>
+                                        </div>
+
+                                        {/* Infrastructure Score - NEW! */}
+                                        <div style={{ padding: 'var(--space-sm)', background: '#DBEAFE', borderRadius: 'var(--radius-md)', borderLeft: '3px solid #3B82F6' }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: '2px' }}>🏗️ Infrastructure</div>
+                                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'bold', color: '#2563EB' }}>
+                                                {route.infrastructure_score ? `${Math.round(route.infrastructure_score)}/100` : 'N/A'}
+                                            </div>
+                                        </div>
+
+                                        {/* Network Score - NEW! */}
+                                        <div style={{ padding: 'var(--space-sm)', background: '#E0E7FF', borderRadius: 'var(--radius-md)', borderLeft: '3px solid #8B5CF6' }}>
+                                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: '2px' }}>📶 Network</div>
+                                            <div style={{ fontSize: 'var(--font-size-sm)', fontWeight: 'bold', color: '#7C3AED' }}>
+                                                {route.network_score ? `${Math.round(route.network_score)}/100` : 'N/A'}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
@@ -615,11 +717,9 @@ const SafeRoutes = () => {
                                         </button>
                                     </div>
 
-                                    <button className="btn btn-sm" style={{ width: '100%', marginTop: 'var(--space-sm)', background: route.color, color: 'white', fontSize: 'var(--font-size-xs)', padding: '8px' }}>
-                                        ⭐ Rate This Route
-                                    </button>
-                                </div>
-                            ))}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
