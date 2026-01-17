@@ -8,11 +8,11 @@ import { cybersecurityAPI } from '../../utils/api';
 const COLORS = {
     PENDING: '#F59E0B',
     REVIEWED: '#10B981',
-    primary: '#7C3AED',
+    primary: '#0066cc',
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
-    info: '#3B82F6'
+    info: '#0080ff'
 };
 
 const CybersecurityDashboard = () => {
@@ -71,84 +71,74 @@ const CybersecurityDashboard = () => {
             </nav>
 
             <div className="page-content container">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                        🔒 Cybersecurity Command Center
-                    </h1>
-                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
-                        Real-time monitoring and threat detection
-                    </p>
-                </motion.div>
-
-                {/* Alert Banner */}
-                {(stats?.alerts.active_sos > 0 || stats?.alerts.pending_flags > 0) && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="glass-card"
-                        style={{ marginBottom: 'var(--space-xl)', padding: 'var(--space-lg)', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
-                        <h3 style={{ color: 'var(--danger)', marginBottom: 'var(--space-sm)' }}>🚨 Active Alerts</h3>
-                        <p style={{ marginBottom: 0 }}>
-                            {stats.alerts.active_sos > 0 && `${stats.alerts.active_sos} active SOS alerts. `}
-                            {stats.alerts.pending_flags > 0 && `${stats.alerts.pending_flags} users flagged for admin review.`}
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                            🔒 Cybersecurity Command Center
+                        </h1>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
+                            Real-time monitoring and threat detection
                         </p>
                     </motion.div>
-                )}
 
-                {/* Key Metrics */}
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-2xl)' }}>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)', borderLeft: '4px solid var(--info)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>👁️</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>{stats?.monitoring.active || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Active Monitoring</div>
+                    {/* Key Metrics */}
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: 'var(--space-lg)', marginBottom: 0 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(0, 128, 255, 0.15) 0%, rgba(0, 128, 255, 0.05) 100%)', borderLeft: '4px solid var(--info)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>👁️</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>{stats?.monitoring.active || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Active Monitoring</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total monitored: {stats?.monitoring.total || 0}</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total monitored: {stats?.monitoring.total || 0}</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>⚠️</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.flags.pending || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Pending Review</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>⚠️</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.flags.pending || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Pending Review</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>Reviewed: {stats?.flags.reviewed || 0}</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>Reviewed: {stats?.flags.reviewed || 0}</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🚫</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.monitoring.suspended || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Suspended</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🚫</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.monitoring.suspended || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Suspended</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total flags: {stats?.flags.total || 0}</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total flags: {stats?.flags.total || 0}</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>📈</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>+{stats?.flags.recent || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>This Week</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>📈</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>+{stats?.flags.recent || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>This Week</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Recent activity</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Recent activity</div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
 
                 {/* Charts */}
@@ -195,7 +185,7 @@ const CybersecurityDashboard = () => {
                             <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)', marginBottom: 'var(--space-sm)' }}>
                                 {((stats?.monitoring.active / stats?.monitoring.total * 100) || 0).toFixed(0)}%
                             </div>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 {stats?.monitoring.active} out of {stats?.monitoring.total} users under active monitoring
                             </p>
                         </div>
@@ -207,7 +197,7 @@ const CybersecurityDashboard = () => {
                             <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)', marginBottom: 'var(--space-sm)' }}>
                                 {((stats?.flags.reviewed / stats?.flags.total * 100) || 0).toFixed(0)}%
                             </div>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 {stats?.flags.reviewed} flags reviewed out of {stats?.flags.total} total
                             </p>
                         </div>
@@ -219,7 +209,7 @@ const CybersecurityDashboard = () => {
                             <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)', marginBottom: 'var(--space-sm)' }}>
                                 {(stats?.alerts.active_sos || 0) + (stats?.alerts.pending_flags || 0)}
                             </div>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 Requires immediate attention
                             </p>
                         </div>
@@ -233,7 +223,7 @@ const CybersecurityDashboard = () => {
                         <Link to="/cybersecurity/monitoring" className="glass-card-dark" style={{ padding: 'var(--space-lg)', textDecoration: 'none', borderLeft: '4px solid var(--info)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🔍</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>View Monitoring</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 Review user activity patterns
                             </p>
                         </Link>
@@ -241,7 +231,7 @@ const CybersecurityDashboard = () => {
                         <div className="glass-card-dark" style={{ padding: 'var(--space-lg)', borderLeft: '4px solid var(--warning)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>⚠️</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>Flag User</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 Report suspicious activity
                             </p>
                         </div>
@@ -249,7 +239,7 @@ const CybersecurityDashboard = () => {
                         <div className="glass-card-dark" style={{ padding: 'var(--space-lg)', borderLeft: '4px solid var(--success)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>📊</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>Generate Report</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>
                                 Export security analytics
                             </p>
                         </div>

@@ -6,16 +6,16 @@ import { useAuth } from '../../context/AuthContext';
 import { adminAPI } from '../../utils/api';
 
 const COLORS = {
-    WOMEN: '#EC4899',
-    POLICE: '#7C3AED',
-    INFRASTRUCTURE: '#3B82F6',
+    WOMEN: '#0066cc',
+    POLICE: '#0052a3',
+    INFRASTRUCTURE: '#0080ff',
     EMERGENCY: '#EF4444',
-    CYBERSECURITY: '#10B981',
-    primary: '#7C3AED',
+    CYBERSECURITY: '#0099ff',
+    primary: '#0066cc',
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
-    info: '#3B82F6'
+    info: '#0080ff'
 };
 
 const AdminDashboard = () => {
@@ -78,77 +78,57 @@ const AdminDashboard = () => {
             </nav>
 
             <div className="page-content container">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                        👑 Admin Control Center
-                    </h1>
-                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
-                        System-wide monitoring and management
-                    </p>
-                </motion.div>
-
-                {/* System Health Alert */}
-                {!systemHealth && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="glass-card"
-                        style={{
-                            marginBottom: 'var(--space-xl)',
-                            padding: 'var(--space-lg)',
-                            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)',
-                            borderLeft: '4px solid var(--danger)'
-                        }}
-                    >
-                        <h3 style={{ color: 'var(--danger)', marginBottom: 'var(--space-sm)' }}>⚠️ Attention Required</h3>
-                        <p style={{ marginBottom: 0 }}>
-                            {stats?.health?.active_sos > 0 && `${stats.health.active_sos} active SOS alerts. `}
-                            {stats?.health?.pending_flags > 0 && `${stats.health.pending_flags} users flagged for review. `}
-                            {stats?.health?.pending_approvals > 0 && `${stats.health.pending_approvals} pending approvals.`}
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                            👑 Admin Control Center
+                        </h1>
+                        <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)', fontWeight: '500' }}>
+                            System-wide monitoring and management
                         </p>
                     </motion.div>
-                )}
 
-                {/* Key Metrics Grid */}
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-2xl)' }}>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%)', borderLeft: '4px solid var(--primary)' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>👥</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--primary)' }}>{stats?.users.total || 0}</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Total Users</div>
-                    </motion.div>
+                    {/* Key Metrics Grid */}
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-lg)', marginBottom: 0 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.05) 100%)', borderLeft: '4px solid var(--primary)' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>👥</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--primary)' }}>{stats?.users.total || 0}</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Total Users</div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(236, 72, 153, 0.1) 0%, rgba(236, 72, 153, 0.05) 100%)', borderLeft: '4px solid #EC4899' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>👩</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: '#EC4899' }}>{stats?.users.women || 0}</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Women Users</div>
-                    </motion.div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.05) 100%)', borderLeft: '4px solid #0066cc' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>👩</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: '#0066cc' }}>{stats?.users.women || 0}</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Women Users</div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>⏳</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.users.pending_approvals || 0}</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Pending Approvals</div>
-                        <Link to="/admin/approvals" className="btn btn-sm btn-warning" style={{ marginTop: 'var(--space-sm)', width: '100%' }}>Review</Link>
-                    </motion.div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>⏳</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.users.pending_approvals || 0}</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Pending Approvals</div>
+                            <Link to="/admin/approvals" className="btn btn-sm btn-warning" style={{ marginTop: 'var(--space-sm)', width: '100%' }}>Review</Link>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🚫</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.flags.pending || 0}</div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Flagged Users</div>
-                        <Link to="/admin/flagged-users" className="btn btn-sm btn-danger" style={{ marginTop: 'var(--space-sm)', width: '100%' }}>Review</Link>
-                    </motion.div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🚫</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.flags.pending || 0}</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Flagged Users</div>
+                            <Link to="/admin/flagged-users" className="btn btn-sm btn-danger" style={{ marginTop: 'var(--space-sm)', width: '100%' }}>Review</Link>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
-                        <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>✅</div>
-                        <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: systemHealth ? 'var(--success)' : 'var(--danger)' }}>
-                            {systemHealth ? 'Healthy' : 'Alert'}
-                        </div>
-                        <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>System Status</div>
-                    </motion.div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
+                            <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>✅</div>
+                            <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: systemHealth ? 'var(--success)' : 'var(--danger)' }}>
+                                {systemHealth ? 'Healthy' : 'Alert'}
+                            </div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>System Status</div>
+                        </motion.div>
+                    </div>
                 </div>
 
                 {/* Charts Row */}
@@ -231,28 +211,28 @@ const AdminDashboard = () => {
                         <div style={{ textAlign: 'center', padding: 'var(--space-lg)', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-lg)' }}>
                             <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🚨</div>
                             <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.system.active_sos || 0}</div>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Active SOS</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Active SOS</div>
                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', marginTop: 'var(--space-xs)' }}>Total: {stats?.system.total_sos || 0}</div>
                         </div>
 
                         <div style={{ textAlign: 'center', padding: 'var(--space-lg)', background: 'rgba(251, 191, 36, 0.1)', borderRadius: 'var(--radius-lg)' }}>
                             <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🚩</div>
                             <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.system.total_zones || 0}</div>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Risk Zones</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Risk Zones</div>
                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', marginTop: 'var(--space-xs)' }}>Active</div>
                         </div>
 
                         <div style={{ textAlign: 'center', padding: 'var(--space-lg)', background: 'rgba(59, 130, 246, 0.1)', borderRadius: 'var(--radius-lg)' }}>
                             <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🔧</div>
                             <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'bold', color: 'var(--info)' }}>{stats?.system.pending_issues || 0}</div>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Pending Issues</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Pending Issues</div>
                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', marginTop: 'var(--space-xs)' }}>Total: {stats?.system.total_issues || 0}</div>
                         </div>
 
                         <div style={{ textAlign: 'center', padding: 'var(--space-lg)', background: 'rgba(239, 68, 68, 0.1)', borderRadius: 'var(--radius-lg)' }}>
                             <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)' }}>🚫</div>
                             <div style={{ fontSize: 'var(--font-size-2xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.users.suspended || 0}</div>
-                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Suspended Users</div>
+                            <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Suspended Users</div>
                             <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', marginTop: 'var(--space-xs)' }}>Flagged: {stats?.flags.total || 0}</div>
                         </div>
                     </div>
@@ -265,7 +245,7 @@ const AdminDashboard = () => {
                         <Link to="/admin/approvals" className="glass-card-dark" style={{ padding: 'var(--space-lg)', textDecoration: 'none', borderLeft: '4px solid var(--warning)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>✅</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>Approve Members</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', marginBottom: 0 }}>
                                 {stats?.users.pending_approvals || 0} pending approvals
                             </p>
                         </Link>
@@ -273,7 +253,7 @@ const AdminDashboard = () => {
                         <Link to="/admin/flagged-users" className="glass-card-dark" style={{ padding: 'var(--space-lg)', textDecoration: 'none', borderLeft: '4px solid var(--danger)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>🚫</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>Review Flagged Users</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', marginBottom: 0 }}>
                                 {stats?.flags.pending || 0} users need review
                             </p>
                         </Link>
@@ -281,7 +261,7 @@ const AdminDashboard = () => {
                         <div className="glass-card-dark" style={{ padding: 'var(--space-lg)', borderLeft: '4px solid var(--success)' }}>
                             <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>📊</div>
                             <h4 style={{ marginBottom: 'var(--space-xs)', color: 'var(--gray-900)' }}>System Overview</h4>
-                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)', marginBottom: 0 }}>
+                            <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', marginBottom: 0 }}>
                                 All systems {systemHealth ? 'operational' : 'need attention'}
                             </p>
                         </div>

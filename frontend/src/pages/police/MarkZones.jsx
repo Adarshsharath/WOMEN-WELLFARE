@@ -30,7 +30,7 @@ const MarkZones = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
-    
+
     // Form state
     const [showForm, setShowForm] = useState(false);
     const [formData, setFormData] = useState({
@@ -40,7 +40,7 @@ const MarkZones = () => {
         reason: '',
         description: ''
     });
-    
+
     // Map state
     const [mapCenter, setMapCenter] = useState([12.9716, 77.5946]); // Bangalore
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -99,7 +99,7 @@ const MarkZones = () => {
                 reason: formData.reason,
                 description: formData.description
             });
-            
+
             setSuccess('Zone marked successfully!');
             setShowForm(false);
             setSelectedLocation(null);
@@ -159,16 +159,18 @@ const MarkZones = () => {
     return (
         <div className="page-wrapper">
             <div className="page-content container">
-                <div className="flex-between mb-lg">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                            🚩 Mark Danger Zones
-                        </h1>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-base)' }}>
-                            Click on the map to mark high-risk areas for women's safety
-                        </p>
-                    </motion.div>
-                    <Link to="/police" className="btn btn-secondary">← Back</Link>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between">
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
+                                <span>🚩</span> Mark Danger Zones
+                            </h1>
+                            <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-base)', marginBottom: 0 }}>
+                                Click on the map to mark high-risk areas for women's safety
+                            </p>
+                        </motion.div>
+                        <Link to="/police" className="btn btn-secondary">← Back</Link>
+                    </div>
                 </div>
 
                 {error && (
@@ -176,7 +178,7 @@ const MarkZones = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="glass-card"
-                        style={{ 
+                        style={{
                             marginBottom: 'var(--space-lg)',
                             padding: 'var(--space-md)',
                             background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)',
@@ -192,7 +194,7 @@ const MarkZones = () => {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="glass-card"
-                        style={{ 
+                        style={{
                             marginBottom: 'var(--space-lg)',
                             padding: 'var(--space-md)',
                             background: 'linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%)',
@@ -212,10 +214,10 @@ const MarkZones = () => {
                         style={{ height: '600px', overflow: 'hidden' }}
                     >
                         <h3 style={{ marginBottom: 'var(--space-md)' }}>📍 Interactive Map</h3>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
                             Click anywhere on the map to mark a danger zone
                         </p>
-                        
+
                         <MapContainer
                             center={mapCenter}
                             zoom={13}
@@ -226,7 +228,7 @@ const MarkZones = () => {
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
                             <MapClickHandler onMapClick={handleMapClick} />
-                            
+
                             {/* Show all marked zones */}
                             {zones.map((zone) => (
                                 <Marker
@@ -236,7 +238,7 @@ const MarkZones = () => {
                                 >
                                     <Popup>
                                         <div style={{ minWidth: '200px' }}>
-                                            <h4 style={{ 
+                                            <h4 style={{
                                                 marginBottom: 'var(--space-sm)',
                                                 color: getRiskColor(zone.risk_level)
                                             }}>
@@ -250,7 +252,7 @@ const MarkZones = () => {
                                                     <strong>Details:</strong> {zone.description}
                                                 </p>
                                             )}
-                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)' }}>
+                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500' }}>
                                                 Marked by: {zone.police_name}
                                             </p>
                                             <span className={`badge ${zone.is_active ? 'badge-danger' : 'badge-gray'}`}>
@@ -260,7 +262,7 @@ const MarkZones = () => {
                                     </Popup>
                                 </Marker>
                             ))}
-                            
+
                             {/* Show selected location */}
                             {selectedLocation && (
                                 <Marker
@@ -351,8 +353,8 @@ const MarkZones = () => {
                                     </div>
 
                                     <div className="flex" style={{ gap: 'var(--space-md)' }}>
-                                        <button 
-                                            type="submit" 
+                                        <button
+                                            type="submit"
                                             className="btn btn-primary"
                                             disabled={loading}
                                             style={{ flex: 1 }}
@@ -381,7 +383,7 @@ const MarkZones = () => {
                             >
                                 <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>🗺️</div>
                                 <h3>Click on the Map</h3>
-                                <p style={{ color: 'var(--gray-600)' }}>
+                                <p style={{ color: 'var(--gray-700)', fontWeight: '500' }}>
                                     Click anywhere on the map to mark a danger zone
                                 </p>
                             </motion.div>
@@ -426,7 +428,7 @@ const MarkZones = () => {
                                             <small style={{ color: 'var(--gray-500)', fontSize: 'var(--font-size-xs)' }}>
                                                 {new Date(zone.timestamp).toLocaleString()}
                                             </small>
-                                            
+
                                             {zone.is_active && (
                                                 <div style={{ marginTop: 'var(--space-sm)' }}>
                                                     <button

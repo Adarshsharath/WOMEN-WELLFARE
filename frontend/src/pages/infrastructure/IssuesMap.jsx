@@ -113,76 +113,46 @@ const InfrastructureIssuesMap = () => {
     return (
         <div className="page-wrapper">
             <div className="page-content container">
-                <div className="flex-between mb-lg">
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                            🗺️ Infrastructure Issues Map
-                        </h1>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-base)' }}>
-                            View and manage infrastructure issues reported by police
-                        </p>
-                    </motion.div>
-                    <Link to="/infrastructure" className="btn btn-secondary">← Back</Link>
-                </div>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between mb-lg">
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                            <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-sm)' }}>
+                                🗺️ Infrastructure Issues Map
+                            </h1>
+                            <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-base)', marginBottom: 0 }}>
+                                View and manage infrastructure issues reported by police
+                            </p>
+                        </motion.div>
+                        <Link to="/infrastructure" className="btn btn-secondary">← Back</Link>
+                    </div>
 
-                {error && (
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="glass-card"
-                        style={{ 
-                            marginBottom: 'var(--space-lg)',
-                            padding: 'var(--space-md)',
-                            background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)',
-                            color: 'white'
-                        }}
-                    >
-                        ⚠️ {error}
-                    </motion.div>
-                )}
-
-                {success && (
-                    <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="glass-card"
-                        style={{ 
-                            marginBottom: 'var(--space-lg)',
-                            padding: 'var(--space-md)',
-                            background: 'linear-gradient(135deg, var(--success) 0%, var(--success-light) 100%)',
-                            color: 'white'
-                        }}
-                    >
-                        ✅ {success}
-                    </motion.div>
-                )}
-
-                {/* Filter Buttons */}
-                <div className="flex mb-lg" style={{ gap: 'var(--space-sm)' }}>
-                    <button
-                        onClick={() => setFilterStatus('ALL')}
-                        className={`btn ${filterStatus === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
-                    >
-                        All Issues ({allIssues.length})
-                    </button>
-                    <button
-                        onClick={() => setFilterStatus('PENDING')}
-                        className={`btn ${filterStatus === 'PENDING' ? 'btn-warning' : 'btn-secondary'}`}
-                    >
-                        Pending ({allIssues.filter(i => i.status === 'PENDING').length})
-                    </button>
-                    <button
-                        onClick={() => setFilterStatus('ACCEPTED')}
-                        className={`btn ${filterStatus === 'ACCEPTED' ? 'btn-info' : 'btn-secondary'}`}
-                    >
-                        Accepted ({allIssues.filter(i => i.status === 'ACCEPTED').length})
-                    </button>
-                    <button
-                        onClick={() => setFilterStatus('COMPLETED')}
-                        className={`btn ${filterStatus === 'COMPLETED' ? 'btn-success' : 'btn-secondary'}`}
-                    >
-                        Completed ({allIssues.filter(i => i.status === 'COMPLETED').length})
-                    </button>
+                    {/* Filter Buttons */}
+                    <div className="flex" style={{ gap: 'var(--space-sm)' }}>
+                        <button
+                            onClick={() => setFilterStatus('ALL')}
+                            className={`btn ${filterStatus === 'ALL' ? 'btn-primary' : 'btn-secondary'}`}
+                        >
+                            All Issues ({allIssues.length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('PENDING')}
+                            className={`btn ${filterStatus === 'PENDING' ? 'btn-warning' : 'btn-secondary'}`}
+                        >
+                            Pending ({allIssues.filter(i => i.status === 'PENDING').length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('ACCEPTED')}
+                            className={`btn ${filterStatus === 'ACCEPTED' ? 'btn-info' : 'btn-secondary'}`}
+                        >
+                            Accepted ({allIssues.filter(i => i.status === 'ACCEPTED').length})
+                        </button>
+                        <button
+                            onClick={() => setFilterStatus('COMPLETED')}
+                            className={`btn ${filterStatus === 'COMPLETED' ? 'btn-success' : 'btn-secondary'}`}
+                        >
+                            Completed ({allIssues.filter(i => i.status === 'COMPLETED').length})
+                        </button>
+                    </div>
                 </div>
 
                 <div className="grid grid-2" style={{ gap: 'var(--space-lg)', alignItems: 'start' }}>
@@ -196,10 +166,10 @@ const InfrastructureIssuesMap = () => {
                         <h3 style={{ marginBottom: 'var(--space-md)' }}>
                             📍 Issues on Map
                         </h3>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
                             🚩 Red flags = Pending/Accepted | ✅ Green = Completed
                         </p>
-                        
+
                         <MapContainer
                             center={mapCenter}
                             zoom={13}
@@ -209,7 +179,7 @@ const InfrastructureIssuesMap = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                             />
-                            
+
                             {/* Show filtered issues */}
                             {filteredIssues.filter(issue => issue.latitude && issue.longitude).map((issue) => (
                                 <Marker
@@ -219,19 +189,18 @@ const InfrastructureIssuesMap = () => {
                                 >
                                     <Popup>
                                         <div style={{ minWidth: '280px' }}>
-                                            <h4 style={{ 
+                                            <h4 style={{
                                                 marginBottom: 'var(--space-sm)',
                                                 color: getStatusColor(issue.status)
                                             }}>
                                                 Issue #{issue.id}
                                             </h4>
-                                            <span className={`badge ${
-                                                issue.status === 'COMPLETED' ? 'badge-success' : 
-                                                issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'
-                                            }`} style={{ marginBottom: 'var(--space-sm)', display: 'inline-block' }}>
+                                            <span className={`badge ${issue.status === 'COMPLETED' ? 'badge-success' :
+                                                    issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'
+                                                }`} style={{ marginBottom: 'var(--space-sm)', display: 'inline-block' }}>
                                                 {issue.status}
                                             </span>
-                                            
+
                                             <div style={{
                                                 background: 'rgba(59, 130, 246, 0.1)',
                                                 padding: 'var(--space-sm)',
@@ -243,24 +212,24 @@ const InfrastructureIssuesMap = () => {
                                                     📋 {issue.description}
                                                 </p>
                                             </div>
-                                            
+
                                             {issue.location && (
                                                 <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
                                                     <strong>📍 Location:</strong> {issue.location}
                                                 </p>
                                             )}
-                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 'var(--space-xs)' }}>
                                                 👮 Reported by: {issue.reporter_name}
                                             </p>
                                             {issue.assigned_to_name && (
-                                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 'var(--space-xs)' }}>
                                                     👷 Assigned to: {issue.assigned_to_name}
                                                 </p>
                                             )}
                                             <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', marginBottom: 'var(--space-sm)' }}>
                                                 🕐 {new Date(issue.timestamp).toLocaleString()}
                                             </p>
-                                            
+
                                             {issue.status === 'PENDING' && (
                                                 <button
                                                     onClick={() => handleAccept(issue.id)}
@@ -271,7 +240,7 @@ const InfrastructureIssuesMap = () => {
                                                     ✅ Accept Issue
                                                 </button>
                                             )}
-                                            
+
                                             {issue.status === 'ACCEPTED' && issue.assigned_to_id && (
                                                 <button
                                                     onClick={() => handleComplete(issue.id)}
@@ -335,7 +304,7 @@ const InfrastructureIssuesMap = () => {
                                             <small style={{ color: 'var(--gray-500)', fontSize: 'var(--font-size-xs)', display: 'block', marginBottom: 'var(--space-sm)' }}>
                                                 👮 Reported by: {issue.reporter_name}
                                             </small>
-                                            
+
                                             {issue.status === 'ACCEPTED' && (
                                                 <button
                                                     onClick={() => handleComplete(issue.id)}
@@ -365,25 +334,25 @@ const InfrastructureIssuesMap = () => {
                                     <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>
                                         {allIssues.filter(i => i.status === 'PENDING').length}
                                     </div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Pending</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Pending</div>
                                 </div>
                                 <div style={{ textAlign: 'center', padding: 'var(--space-md)', background: 'rgba(59, 130, 246, 0.1)', borderRadius: 'var(--radius-md)' }}>
                                     <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>
                                         {allIssues.filter(i => i.status === 'ACCEPTED').length}
                                     </div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>In Progress</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>In Progress</div>
                                 </div>
                                 <div style={{ textAlign: 'center', padding: 'var(--space-md)', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-md)' }}>
                                     <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>
                                         {allIssues.filter(i => i.status === 'COMPLETED').length}
                                     </div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Completed</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Completed</div>
                                 </div>
                                 <div style={{ textAlign: 'center', padding: 'var(--space-md)', background: 'rgba(168, 85, 247, 0.1)', borderRadius: 'var(--radius-md)' }}>
                                     <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--primary)' }}>
                                         {myIssues.length}
                                     </div>
-                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>My Issues</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>My Issues</div>
                                 </div>
                             </div>
                         </motion.div>

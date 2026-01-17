@@ -9,11 +9,11 @@ const COLORS = {
     ACTIVE: '#EF4444',
     RESOLVED: '#10B981',
     CANCELLED: '#6B7280',
-    primary: '#7C3AED',
+    primary: '#0066cc',
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
-    info: '#3B82F6'
+    info: '#0080ff'
 };
 
 const EmergencyDashboard = () => {
@@ -77,97 +77,88 @@ const EmergencyDashboard = () => {
             </nav>
 
             <div className="page-content container">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                        🚨 Emergency Response Center
-                    </h1>
-                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
-                        Real-time emergency monitoring and coordination
-                    </p>
-                </motion.div>
-
-                {/* Active Alerts Banner */}
-                {stats?.sos.active > 0 && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="glass-card"
-                        style={{ marginBottom: 'var(--space-xl)', padding: 'var(--space-lg)', background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)', animation: 'pulse 2s ease-in-out infinite' }}>
-                        <h3 style={{ color: 'var(--danger)', marginBottom: 'var(--space-sm)' }}>🚨 {stats.sos.active} ACTIVE SOS ALERTS</h3>
-                        <p style={{ marginBottom: 0, fontWeight: '600' }}>
-                            Immediate response required! {stats.sos.active_24h} new alerts in last 24 hours.
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                            🚨 Emergency Response Center
+                        </h1>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
+                            Real-time emergency monitoring and coordination
                         </p>
                     </motion.div>
-                )}
 
-                {/* Key Metrics */}
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-2xl)' }}>
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🚨</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.sos.active || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Active SOS</div>
+                    {/* Key Metrics */}
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 'var(--space-lg)', marginBottom: 0 }}>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)', borderLeft: '4px solid var(--danger)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🚨</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>{stats?.sos.active || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Active SOS</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>+{stats?.sos.active_24h || 0} in last 24h</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>+{stats?.sos.active_24h || 0} in last 24h</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>✅</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>{stats?.sos.resolved || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Resolved</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)', borderLeft: '4px solid var(--success)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>✅</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>{stats?.sos.resolved || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Resolved</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>Rate: {stats?.response.rate || 0}%</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>Rate: {stats?.response.rate || 0}%</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🚩</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.zones.total || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Risk Zones</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)', borderLeft: '4px solid var(--warning)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🚩</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>{stats?.zones.total || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Risk Zones</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>Critical: {stats?.zones.critical || 0}</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>Critical: {stats?.zones.critical || 0}</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)', borderLeft: '4px solid var(--info)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>👩</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>{stats?.users.total_women || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Protected</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(0, 128, 255, 0.15) 0%, rgba(0, 128, 255, 0.05) 100%)', borderLeft: '4px solid var(--info)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>👩</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>{stats?.users.total_women || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Protected</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total registered</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total registered</div>
+                            </div>
+                        </motion.div>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
-                        className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(124, 58, 237, 0.05) 100%)', borderLeft: '4px solid var(--primary)' }}>
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>📊</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--primary)' }}>{stats?.sos.recent_24h || 0}</div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>Last 24h</div>
+                        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}
+                            className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 102, 204, 0.05) 100%)', borderLeft: '4px solid var(--primary)' }}>
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>📊</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--primary)' }}>{stats?.sos.recent_24h || 0}</div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>Last 24h</div>
+                                </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total: {stats?.sos.total || 0}</div>
-                        </div>
-                    </motion.div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total: {stats?.sos.total || 0}</div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
 
                 {/* Charts */}
@@ -209,7 +200,7 @@ const EmergencyDashboard = () => {
                         <h3 style={{ marginBottom: 0 }}>🚨 Active SOS Events</h3>
                         <Link to="/emergency/chat" className="btn btn-danger btn-sm">Emergency Chat</Link>
                     </div>
-                    
+
                     {sosEvents.length === 0 ? (
                         <div style={{ textAlign: 'center', padding: 'var(--space-2xl)', color: 'var(--gray-500)' }}>
                             <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>✅</div>

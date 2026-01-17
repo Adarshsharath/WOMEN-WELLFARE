@@ -10,11 +10,11 @@ const COLORS = {
     HIGH: '#EF4444',
     MEDIUM: '#F59E0B',
     LOW: '#10B981',
-    primary: '#7C3AED',
+    primary: '#0066cc',
     success: '#10B981',
     warning: '#F59E0B',
     danger: '#EF4444',
-    info: '#3B82F6'
+    info: '#0080ff'
 };
 
 const PoliceDashboard = () => {
@@ -82,143 +82,149 @@ const PoliceDashboard = () => {
             </nav>
 
             <div className="page-content container">
-                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                        🚔 Police Command Center
-                    </h1>
-                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
-                        Real-time monitoring and analytics dashboard
-                    </p>
-                </motion.div>
-
-                {/* Key Metrics Cards */}
-                <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)', marginBottom: 'var(--space-2xl)' }}>
-                    {/* SOS Alerts Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="glass-card"
-                        style={{ 
-                            background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)',
-                            borderLeft: '4px solid var(--danger)'
-                        }}
-                    >
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🚨</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>
-                                    {stats?.sos.active || 0}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>
-                                    Active SOS Alerts
-                                </div>
-                            </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div className="flex-between">
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total: {stats?.sos.total || 0}</span>
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>
-                                    +{stats?.sos.recent || 0} this week
-                                </span>
-                            </div>
-                        </div>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
+                            <span>🚔</span> Police Command Center
+                        </h1>
+                        <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)', fontWeight: '500' }}>
+                            Real-time monitoring and analytics dashboard
+                        </p>
                     </motion.div>
 
-                    {/* High Risk Zones Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.2 }}
-                        className="glass-card"
-                        style={{ 
-                            background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)',
-                            borderLeft: '4px solid var(--warning)'
-                        }}
-                    >
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🚩</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>
-                                    {stats?.zones.active || 0}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>
-                                    Active Risk Zones
+                    {/* Key Metrics Cards */}
+                    <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 'var(--space-lg)' }}>
+                        {/* SOS Alerts Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.1 }}
+                            className="glass-card"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%)',
+                                borderLeft: '4px solid var(--danger)',
+                                padding: 'var(--space-lg)'
+                            }}
+                        >
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🚨</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--danger)' }}>
+                                        {stats?.sos.active || 0}
+                                    </div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>
+                                        Active SOS Alerts
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div className="flex-between">
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>
-                                    Critical: {stats?.zones.critical || 0}
-                                </span>
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--warning)' }}>
-                                    High: {stats?.zones.high || 0}
-                                </span>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div className="flex-between">
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>Total: {stats?.sos.total || 0}</span>
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>
+                                        +{stats?.sos.recent || 0} this week
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
 
-                    {/* Infrastructure Issues Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3 }}
-                        className="glass-card"
-                        style={{ 
-                            background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
-                            borderLeft: '4px solid var(--info)'
-                        }}
-                    >
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>🔧</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>
-                                    {stats?.issues.pending || 0}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>
-                                    Pending Issues
+                        {/* High Risk Zones Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="glass-card"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(251, 191, 36, 0.1) 0%, rgba(251, 191, 36, 0.05) 100%)',
+                                borderLeft: '4px solid var(--warning)',
+                                padding: 'var(--space-lg)'
+                            }}
+                        >
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🚩</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--warning)' }}>
+                                        {stats?.zones.active || 0}
+                                    </div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>
+                                        Active Risk Zones
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div className="flex-between">
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>In Progress: {stats?.issues.accepted || 0}</span>
-                                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>
-                                    Done: {stats?.issues.completed || 0}
-                                </span>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div className="flex-between">
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--danger)' }}>
+                                        Critical: {stats?.zones.critical || 0}
+                                    </span>
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--warning)' }}>
+                                        High: {stats?.zones.high || 0}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
 
-                    {/* Resolved Cases Card */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        className="glass-card"
-                        style={{ 
-                            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
-                            borderLeft: '4px solid var(--success)'
-                        }}
-                    >
-                        <div className="flex-between mb-md">
-                            <div style={{ fontSize: '3rem' }}>✅</div>
-                            <div style={{ textAlign: 'right' }}>
-                                <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>
-                                    {stats?.sos.resolved || 0}
-                                </div>
-                                <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-600)' }}>
-                                    Resolved SOS
+                        {/* Infrastructure Issues Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="glass-card"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%)',
+                                borderLeft: '4px solid var(--info)',
+                                padding: 'var(--space-lg)'
+                            }}
+                        >
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>🔧</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--info)' }}>
+                                        {stats?.issues.pending || 0}
+                                    </div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>
+                                        Pending Issues
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                            <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', textAlign: 'right' }}>
-                                Total Cases: {stats?.sos.total || 0}
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div className="flex-between">
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>In Progress: {stats?.issues.accepted || 0}</span>
+                                    <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--success)' }}>
+                                        Done: {stats?.issues.completed || 0}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </motion.div>
+                        </motion.div>
+
+                        {/* Resolved Cases Card */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                            className="glass-card"
+                            style={{
+                                background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(16, 185, 129, 0.05) 100%)',
+                                borderLeft: '4px solid var(--success)',
+                                padding: 'var(--space-lg)'
+                            }}
+                        >
+                            <div className="flex-between mb-md">
+                                <div style={{ fontSize: '3rem' }}>✅</div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 'bold', color: 'var(--success)' }}>
+                                        {stats?.sos.resolved || 0}
+                                    </div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--gray-700)', fontWeight: '500' }}>
+                                        Resolved SOS
+                                    </div>
+                                </div>
+                            </div>
+                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)', textAlign: 'right' }}>
+                                    Total Cases: {stats?.sos.total || 0}
+                                </div>
+                            </div>
+                        </motion.div>
+                    </div>
                 </div>
 
                 {/* Charts Row */}
@@ -238,19 +244,19 @@ const PoliceDashboard = () => {
                                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
                                 <XAxis dataKey="date" stroke="#6B7280" style={{ fontSize: '12px' }} />
                                 <YAxis stroke="#6B7280" style={{ fontSize: '12px' }} />
-                                <Tooltip 
-                                    contentStyle={{ 
-                                        background: 'rgba(255,255,255,0.95)', 
+                                <Tooltip
+                                    contentStyle={{
+                                        background: 'rgba(255,255,255,0.95)',
                                         border: '1px solid rgba(0,0,0,0.1)',
                                         borderRadius: '8px',
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                                    }} 
+                                    }}
                                 />
                                 <Legend />
-                                <Line 
-                                    type="monotone" 
-                                    dataKey="count" 
-                                    stroke={COLORS.danger} 
+                                <Line
+                                    type="monotone"
+                                    dataKey="count"
+                                    stroke={COLORS.danger}
                                     strokeWidth={3}
                                     dot={{ fill: COLORS.danger, r: 5 }}
                                     activeDot={{ r: 7 }}
@@ -286,12 +292,12 @@ const PoliceDashboard = () => {
                                         <Cell key={`cell-${index}`} fill={getRiskColor(entry.level)} />
                                     ))}
                                 </Pie>
-                                <Tooltip 
-                                    contentStyle={{ 
-                                        background: 'rgba(255,255,255,0.95)', 
+                                <Tooltip
+                                    contentStyle={{
+                                        background: 'rgba(255,255,255,0.95)',
                                         border: '1px solid rgba(0,0,0,0.1)',
                                         borderRadius: '8px'
-                                    }} 
+                                    }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -314,7 +320,7 @@ const PoliceDashboard = () => {
                             View All on Map
                         </Link>
                     </div>
-                    
+
                     {stats?.high_risk_areas && stats.high_risk_areas.length > 0 ? (
                         <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 'var(--space-md)' }}>
                             {stats.high_risk_areas.map((zone, index) => (
@@ -331,7 +337,7 @@ const PoliceDashboard = () => {
                                     }}
                                 >
                                     <div className="flex-between mb-sm">
-                                        <span className="badge" style={{ 
+                                        <span className="badge" style={{
                                             background: getRiskColor(zone.risk_level),
                                             color: 'white',
                                             fontWeight: 'bold'
@@ -342,8 +348,8 @@ const PoliceDashboard = () => {
                                             Zone #{zone.id}
                                         </span>
                                     </div>
-                                    <p style={{ 
-                                        fontSize: 'var(--font-size-sm)', 
+                                    <p style={{
+                                        fontSize: 'var(--font-size-sm)',
                                         marginBottom: 'var(--space-xs)',
                                         fontWeight: '600',
                                         color: getRiskColor(zone.risk_level)
@@ -351,16 +357,16 @@ const PoliceDashboard = () => {
                                         ⚠️ {zone.reason}
                                     </p>
                                     {zone.description && (
-                                        <p style={{ 
-                                            fontSize: 'var(--font-size-xs)', 
-                                            color: 'var(--gray-600)',
+                                        <p style={{
+                                            fontSize: 'var(--font-size-xs)',
+                                            color: 'var(--gray-700)', fontWeight: '500',
                                             marginBottom: 'var(--space-xs)'
                                         }}>
                                             {zone.description}
                                         </p>
                                     )}
-                                    <div style={{ 
-                                        fontSize: 'var(--font-size-xs)', 
+                                    <div style={{
+                                        fontSize: 'var(--font-size-xs)',
                                         color: 'var(--gray-500)',
                                         borderTop: '1px solid rgba(0,0,0,0.1)',
                                         paddingTop: 'var(--space-xs)',
@@ -391,9 +397,9 @@ const PoliceDashboard = () => {
                     <h3 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                         🚨 Active SOS Events
                     </h3>
-                    
+
                     {sosEvents.length === 0 ? (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             style={{ textAlign: 'center', padding: 'var(--space-2xl)', color: 'var(--gray-500)' }}
@@ -438,8 +444,8 @@ const PoliceDashboard = () => {
                                         <strong>🕐 Time:</strong> {new Date(sos.timestamp).toLocaleString()}
                                     </p>
 
-                                    <Link 
-                                        to={`/police/sos/${sos.id}`} 
+                                    <Link
+                                        to={`/police/sos/${sos.id}`}
                                         className="btn btn-danger btn-sm"
                                         style={{ marginTop: 'var(--space-sm)', width: '100%' }}
                                     >

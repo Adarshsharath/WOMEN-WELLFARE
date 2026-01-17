@@ -15,10 +15,19 @@ def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
             print("Warning: Fast2SMS API key not configured")
             return False
         
-        message = f"🚨 EMERGENCY ALERT! {woman_name} has triggered SOS. Location: https://maps.google.com/?q={latitude},{longitude} | Battery: {battery}% | Please respond immediately!"
+        # Debug: Print first 4 chars of the key to verify it's loaded correctly
+        print(f"DEBUG: Attempting SMS with key starting with: {FAST2SMS_API_KEY[:4]}...")
+        
+        message = (
+            f"🚨 SAFE SPACE EMERGENCY 🚨\n"
+            f"User: {woman_name}\n"
+            f"Status: SOS TRIGGERED\n"
+            f"Location: https://maps.google.com/?q={latitude},{longitude}\n"
+            f"Battery: {battery}%\n"
+            f"Action: Immediate assistance required!"
+        )
         
         payload = {
-            'authorization': FAST2SMS_API_KEY,
             'route': 'q',
             'message': message,
             'language': 'english',
@@ -27,6 +36,8 @@ def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
         }
         
         headers = {
+            'Authorization': FAST2SMS_API_KEY,
+            'Content-Type': 'application/json',
             'cache-control': 'no-cache'
         }
         

@@ -33,18 +33,20 @@ const AdminFlaggedUsers = () => {
     return (
         <div className="page-wrapper">
             <div className="page-content container">
-                <div className="flex-between mb-lg">
-                    <div>
-                        <h1>Flagged Users</h1>
-                        <p style={{ color: 'var(--gray-600)' }}>Review users flagged by cybersecurity</p>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between">
+                        <div>
+                            <h1 style={{ marginBottom: 'var(--space-xs)' }}>Flagged Users</h1>
+                            <p style={{ color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>Review users flagged by cybersecurity</p>
+                        </div>
+                        <Link to="/admin" className="btn btn-secondary">← Back to Approvals</Link>
                     </div>
-                    <Link to="/admin" className="btn btn-secondary">← Back to Approvals</Link>
                 </div>
 
                 {flaggedUsers.length === 0 ? (
                     <div className="glass-card text-center" style={{ padding: 'var(--space-2xl)' }}>
                         <h3>No Flagged Users</h3>
-                        <p style={{ color: 'var(--gray-600)' }}>All flagged users have been reviewed</p>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500' }}>All flagged users have been reviewed</p>
                     </div>
                 ) : (
                     <div className="grid grid-2">

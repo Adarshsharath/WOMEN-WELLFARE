@@ -17,9 +17,19 @@ const FakeCall = () => {
     const [countdown, setCountdown] = useState(0);
     const [callTimer, setCallTimer] = useState(0);
     const navigate = useNavigate();
+    const API_BASE = 'http://localhost:5000';
+
+    // Refs for audio and timers
     const timerRef = useRef(null);
     const callDurationRef = useRef(null);
+    const ringtoneRef = useRef(null);
+    const recordingRef = useRef(null);
 
+    // Audio paths - the backend serves /audio directly
+    const RINGTONE_URL = `${API_BASE}/audio/ringtone/ringtone.mp3`;
+    const GET_RECORDING_URL = (id) => `${API_BASE}/audio/recordings/${id === 'brother' ? 'brother' : 'brother'}.mp3`;
+
+    // Handle Countdown
     useEffect(() => {
         if (status === 'SCHEDULED' && countdown > 0) {
             const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
@@ -29,14 +39,49 @@ const FakeCall = () => {
         }
     }, [status, countdown]);
 
+    // Handle Ringtone
+    useEffect(() => {
+        if (status === 'RINGING') {
+            ringtoneRef.current = new Audio(RINGTONE_URL);
+            ringtoneRef.current.loop = true;
+            ringtoneRef.current.play().catch(e => console.error("Ringtone error:", e));
+        } else {
+            if (ringtoneRef.current) {
+                ringtoneRef.current.pause();
+                ringtoneRef.current = null;
+            }
+        }
+
+        return () => {
+            if (ringtoneRef.current) {
+                ringtoneRef.current.pause();
+                ringtoneRef.current = null;
+            }
+        };
+    }, [status]);
+
+    // Handle Call Timer and Recording
     useEffect(() => {
         if (status === 'IN_CALL') {
+            // Start recording playback
+            const url = GET_RECORDING_URL(selectedCaller.id);
+            recordingRef.current = new Audio(url);
+            recordingRef.current.play().catch(e => console.error("Recording error:", e));
+
+            // Start timer
             callDurationRef.current = setInterval(() => {
                 setCallTimer(prev => prev + 1);
             }, 1000);
-            return () => clearInterval(callDurationRef.current);
+
+            return () => {
+                clearInterval(callDurationRef.current);
+                if (recordingRef.current) {
+                    recordingRef.current.pause();
+                    recordingRef.current = null;
+                }
+            };
         }
-    }, [status]);
+    }, [status, selectedCaller]);
 
     const formatTime = (totalSeconds) => {
         const mins = Math.floor(totalSeconds / 60);

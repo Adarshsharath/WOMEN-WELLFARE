@@ -51,17 +51,19 @@ const InfrastructureChat = () => {
     return (
         <div className="page-wrapper" style={{ height: '100vh', overflow: 'hidden' }}>
             <div className="page-content container" style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 'var(--space-lg) var(--space-lg) 0' }}>
-                <div className="flex-between mb-lg">
-                    <h1 style={{ marginBottom: 0 }}>Infrastructure Team Chat</h1>
-                    <div className="flex" style={{ gap: 'var(--space-md)' }}>
-                        <button
-                            onClick={() => setIsChatExpanded(!isChatExpanded)}
-                            className="btn btn-secondary"
-                            title={isChatExpanded ? "Exit Fullscreen" : "Fullscreen"}
-                        >
-                            {isChatExpanded ? '⤓' : '⤢'}
-                        </button>
-                        <Link to="/infrastructure" className="btn btn-secondary">← Back</Link>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-lg)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between">
+                        <h1 style={{ marginBottom: 0 }}>Infrastructure Team Chat</h1>
+                        <div className="flex" style={{ gap: 'var(--space-md)' }}>
+                            <button
+                                onClick={() => setIsChatExpanded(!isChatExpanded)}
+                                className="btn btn-secondary"
+                                title={isChatExpanded ? "Exit Fullscreen" : "Fullscreen"}
+                            >
+                                {isChatExpanded ? '⤓' : '⤢'}
+                            </button>
+                            <Link to="/infrastructure" className="btn btn-secondary">← Back</Link>
+                        </div>
                     </div>
                 </div>
 
@@ -89,16 +91,16 @@ const InfrastructureChat = () => {
                         <h3 style={{ marginBottom: 'var(--space-sm)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                             <span>🏗️</span> Infrastructure Department Communication
                         </h3>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 0 }}>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)', marginBottom: 0 }}>
                             Internal chat for infrastructure team members • Coordinate and collaborate
                         </p>
                     </div>
 
-                    <div 
+                    <div
                         ref={chatContainerRef}
-                        style={{ 
-                            flex: 1, 
-                            overflowY: 'auto', 
+                        style={{
+                            flex: 1,
+                            overflowY: 'auto',
                             marginBottom: 'var(--space-lg)',
                             paddingRight: 'var(--space-sm)'
                         }}
@@ -147,16 +149,16 @@ const InfrastructureChat = () => {
                                 value={newMessage}
                                 onChange={(e) => setNewMessage(e.target.value)}
                                 placeholder="Type your message here..."
-                                style={{ 
-                                    flex: 1, 
-                                    padding: 'var(--space-md)', 
+                                style={{
+                                    flex: 1,
+                                    padding: 'var(--space-md)',
                                     fontSize: 'var(--font-size-base)',
                                     marginBottom: 0
                                 }}
                                 autoFocus
                             />
-                            <button 
-                                type="submit" 
+                            <button
+                                type="submit"
                                 className="btn btn-primary"
                                 disabled={!newMessage.trim()}
                             >

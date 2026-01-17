@@ -48,8 +48,10 @@ const CybersecurityMonitoring = () => {
             </nav>
 
             <div className="page-content container">
-                <h1>Abuse Monitoring</h1>
-                <p style={{ color: 'var(--gray-600)' }}>Monitor SOS and fake call usage patterns</p>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <h1 style={{ marginBottom: 'var(--space-sm)' }}>Abuse Monitoring</h1>
+                    <p style={{ color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>Monitor SOS and fake call usage patterns</p>
+                </div>
 
                 <div style={{ marginTop: 'var(--space-xl)', overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 var(--space-sm)' }}>

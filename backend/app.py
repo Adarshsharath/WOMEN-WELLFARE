@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from models import db, User
 from auth import register_woman, register_community, login_user
@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///saf
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize CORS
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Initialize database
 db.init_app(app)
@@ -64,6 +64,12 @@ def login_route():
     data = request.get_json()
     result, status_code = login_user(data)
     return jsonify(result), status_code
+
+
+@app.route('/audio/<path:filename>')
+def serve_audio(filename):
+    """Serve audio files"""
+    return send_from_directory('audio', filename)
 
 
 @app.route('/api/health', methods=['GET'])

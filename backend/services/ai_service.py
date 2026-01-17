@@ -4,17 +4,23 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
-GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
-
+GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
+DEFAULT_MODEL = 'llama-3.3-70b-versatile'
 
 def chat_with_gemini(message, conversation_history=None):
-    """Send message to Gemini AI and get response"""
+    """
+    Send message to Groq AI and get response. 
+    Maintained the function name 'chat_with_gemini' to avoid breaking frontend/other service calls.
+    """
     try:
-        if not GEMINI_API_KEY:
+        # Debug: Check key loading
+        print(f"DEBUG: Groq API Key loaded (first 4): {GROQ_API_KEY[:4] if GROQ_API_KEY else 'None'}")
+        
+        if not GROQ_API_KEY:
             return {
                 'success': False,
-                'error': 'Gemini API key not configured',
+                'error': 'Groq API key not configured',
                 'message': "I'm here to help, but the AI service isn't configured yet. Please reach out to your emergency contacts if you need immediate assistance."
             }
         
@@ -33,29 +39,36 @@ def chat_with_gemini(message, conversation_history=None):
         
         Remember: Your goal is to make them feel heard, safe, and supported."""
         
-        # Build conversation context
-        conversation_text = system_prompt + "\n\n"
+        # Build Groq messages list
+        messages = [{"role": "system", "content": system_prompt}]
+        
         if conversation_history:
             for msg in conversation_history:
-                role = "User" if msg['role'] == 'user' else "Assistant"
-                conversation_text += f"{role}: {msg['content']}\n"
-        conversation_text += f"User: {message}\nAssistant:"
+                # Map roles correctly if needed, Groq uses 'user' and 'assistant'
+                role = "user" if msg['role'] == 'user' else "assistant"
+                messages.append({"role": role, "content": msg['content']})
+        
+        messages.append({"role": "user", "content": message})
         
         # API Request
-        url = f"{GEMINI_URL}?key={GEMINI_API_KEY}"
         payload = {
-            'contents': [{
-                'parts': [{'text': conversation_text}]
-            }]
+            'model': DEFAULT_MODEL,
+            'messages': messages,
+            'temperature': 0.7,
+            'max_tokens': 500
         }
         
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {GROQ_API_KEY}'
+        }
+        
+        response = requests.post(GROQ_URL, headers=headers, json=payload, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
-            if 'candidates' in data and len(data['candidates']) > 0:
-                reply = data['candidates'][0]['content']['parts'][0]['text']
+            if 'choices' in data and len(data['choices']) > 0:
+                reply = data['choices'][0]['message']['content']
                 return {
                     'success': True,
                     'message': reply.strip()
@@ -67,6 +80,8 @@ def chat_with_gemini(message, conversation_history=None):
                     'message': "I'm having trouble connecting right now. Please try again or reach out to your emergency contacts."
                 }
         else:
+            print(f"DEBUG: Groq API Error {response.status_code}")
+            print(f"DEBUG: Response body: {response.text}")
             return {
                 'success': False,
                 'error': f'API error: {response.status_code}',
@@ -74,7 +89,7 @@ def chat_with_gemini(message, conversation_history=None):
             }
     
     except Exception as e:
-        print(f"Error with Gemini AI: {str(e)}")
+        print(f"Error with Groq AI: {str(e)}")
         return {
             'success': False,
             'error': str(e),
@@ -83,12 +98,12 @@ def chat_with_gemini(message, conversation_history=None):
 
 
 def summarize_incident(incident_description, location, timestamp):
-    """Generate a structured incident summary using Gemini AI"""
+    """Generate a structured incident summary using Groq AI"""
     try:
-        if not GEMINI_API_KEY:
+        if not GROQ_API_KEY:
             return {
                 'success': False,
-                'error': 'Gemini API key not configured'
+                'error': 'Groq API key not configured'
             }
         
         prompt = f"""Create a structured incident report based on the following information:
@@ -105,20 +120,25 @@ Please provide:
 
 Format as a clear, professional incident report."""
         
-        url = f"{GEMINI_URL}?key={GEMINI_API_KEY}"
-        payload = {
-            'contents': [{
-                'parts': [{'text': prompt}]
-            }]
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': f'Bearer {GROQ_API_KEY}'
         }
         
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(url, headers=headers, json=payload, timeout=30)
+        payload = {
+            'model': DEFAULT_MODEL,
+            'messages': [
+                {"role": "system", "content": "You are a professional safety coordinator."},
+                {"role": "user", "content": prompt}
+            ]
+        }
+        
+        response = requests.post(GROQ_URL, headers=headers, json=payload, timeout=30)
         
         if response.status_code == 200:
             data = response.json()
-            if 'candidates' in data and len(data['candidates']) > 0:
-                summary = data['candidates'][0]['content']['parts'][0]['text']
+            if 'choices' in data and len(data['choices']) > 0:
+                summary = data['choices'][0]['message']['content']
                 return {
                     'success': True,
                     'summary': summary.strip()

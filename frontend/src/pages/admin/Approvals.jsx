@@ -57,13 +57,15 @@ const AdminApprovals = () => {
             </nav>
 
             <div className="page-content container">
-                <h1>Community Approvals</h1>
-                <p style={{ color: 'var(--gray-600)' }}>Review and approve community member registrations</p>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <h1 style={{ marginBottom: 'var(--space-xs)' }}>Community Approvals</h1>
+                    <p style={{ color: 'var(--gray-700)', fontWeight: '500', marginBottom: 0 }}>Review and approve community member registrations</p>
+                </div>
 
                 {pendingUsers.length === 0 ? (
                     <div className="glass-card text-center" style={{ padding: 'var(--space-2xl)', marginTop: 'var(--space-xl)' }}>
                         <h3>No Pending Approvals</h3>
-                        <p style={{ color: 'var(--gray-600)' }}>All community registrations have been processed</p>
+                        <p style={{ color: 'var(--gray-700)', fontWeight: '500' }}>All community registrations have been processed</p>
                     </div>
                 ) : (
                     <div className="grid grid-2" style={{ marginTop: 'var(--space-xl)' }}>

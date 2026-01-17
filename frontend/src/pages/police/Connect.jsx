@@ -35,7 +35,7 @@ const PoliceConnect = () => {
     const [isChatExpanded, setIsChatExpanded] = useState(false);
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
-    
+
     // Map state
     const [mapCenter, setMapCenter] = useState([12.9716, 77.5946]); // Bangalore
     const [selectedLocation, setSelectedLocation] = useState(null);
@@ -76,7 +76,7 @@ const PoliceConnect = () => {
             console.error('Failed to load issues:', error);
         }
     };
-    
+
     const loadAllIssues = async () => {
         try {
             const data = await policeAPI.getAllIssues();
@@ -85,7 +85,7 @@ const PoliceConnect = () => {
             console.error('Failed to load all issues:', error);
         }
     };
-    
+
     const handleMapClick = (latlng) => {
         setSelectedLocation(latlng);
         setNewIssue({
@@ -134,7 +134,7 @@ const PoliceConnect = () => {
             alert('Failed to report issue: ' + error.message);
         }
     };
-    
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'COMPLETED': return 'var(--success)';
@@ -147,35 +147,37 @@ const PoliceConnect = () => {
     return (
         <div className="page-wrapper" style={{ height: '100vh', overflow: 'hidden' }}>
             <div className="page-content container" style={{ height: '100%', display: 'flex', flexDirection: 'column', padding: 'var(--space-lg) var(--space-lg) 0' }}>
-                <div className="flex-between mb-lg">
-                    <h1 style={{ marginBottom: 0 }}>Police Connect</h1>
-                    <div className="flex" style={{ gap: 'var(--space-md)' }}>
-                        {activeTab === 'chat' && (
-                            <button
-                                onClick={() => setIsChatExpanded(!isChatExpanded)}
-                                className="btn btn-secondary"
-                                title={isChatExpanded ? "Exit Fullscreen" : "Fullscreen"}
-                            >
-                                {isChatExpanded ? '⤓' : '⤢'}
-                            </button>
-                        )}
-                        <Link to="/police" className="btn btn-secondary">← Back</Link>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-lg)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between mb-lg">
+                        <h1 style={{ marginBottom: 0 }}>Police Connect</h1>
+                        <div className="flex" style={{ gap: 'var(--space-md)' }}>
+                            {activeTab === 'chat' && (
+                                <button
+                                    onClick={() => setIsChatExpanded(!isChatExpanded)}
+                                    className="btn btn-secondary"
+                                    title={isChatExpanded ? "Exit Fullscreen" : "Fullscreen"}
+                                >
+                                    {isChatExpanded ? '⤓' : '⤢'}
+                                </button>
+                            )}
+                            <Link to="/police" className="btn btn-secondary">← Back</Link>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex mb-lg" style={{ gap: 'var(--space-md)' }}>
-                    <button
-                        onClick={() => { setActiveTab('chat'); setIsChatExpanded(false); }}
-                        className={`btn ${activeTab === 'chat' ? 'btn-primary' : 'btn-secondary'}`}
-                    >
-                        💬 Interagency Intel Hub
-                    </button>
-                    <button
-                        onClick={() => { setActiveTab('issues'); setIsChatExpanded(false); }}
-                        className={`btn ${activeTab === 'issues' ? 'btn-primary' : 'btn-secondary'}`}
-                    >
-                        🔧 Infrastructure Coordination
-                    </button>
+                    <div className="flex" style={{ gap: 'var(--space-md)' }}>
+                        <button
+                            onClick={() => { setActiveTab('chat'); setIsChatExpanded(false); }}
+                            className={`btn ${activeTab === 'chat' ? 'btn-primary' : 'btn-secondary'}`}
+                        >
+                            💬 Interagency Intel Hub
+                        </button>
+                        <button
+                            onClick={() => { setActiveTab('issues'); setIsChatExpanded(false); }}
+                            className={`btn ${activeTab === 'issues' ? 'btn-primary' : 'btn-secondary'}`}
+                        >
+                            🔧 Infrastructure Coordination
+                        </button>
+                    </div>
                 </div>
 
                 <AnimatePresence mode="wait">
@@ -206,16 +208,16 @@ const PoliceConnect = () => {
                                 <h3 style={{ marginBottom: 'var(--space-sm)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                                     <span>🚔</span> Police Communication Channel
                                 </h3>
-                                <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 0 }}>
+                                <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)', marginBottom: 0 }}>
                                     Internal chat for police officers • Real-time updates
                                 </p>
                             </div>
 
-                            <div 
+                            <div
                                 ref={chatContainerRef}
-                                style={{ 
-                                    flex: 1, 
-                                    overflowY: 'auto', 
+                                style={{
+                                    flex: 1,
+                                    overflowY: 'auto',
                                     marginBottom: 'var(--space-lg)',
                                     paddingRight: 'var(--space-sm)'
                                 }}
@@ -264,16 +266,16 @@ const PoliceConnect = () => {
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Type your message here..."
-                                        style={{ 
-                                            flex: 1, 
-                                            padding: 'var(--space-md)', 
+                                        style={{
+                                            flex: 1,
+                                            padding: 'var(--space-md)',
                                             fontSize: 'var(--font-size-base)',
                                             marginBottom: 0
                                         }}
                                         autoFocus
                                     />
-                                    <button 
-                                        type="submit" 
+                                    <button
+                                        type="submit"
                                         className="btn btn-primary"
                                         disabled={!newMessage.trim()}
                                     >
@@ -303,10 +305,10 @@ const PoliceConnect = () => {
                                     <h3 style={{ marginBottom: 'var(--space-md)' }}>
                                         🗺️ Infrastructure Issues Map
                                     </h3>
-                                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
+                                    <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
                                         🚩 Red flags show pending issues. Click on map to report new issue.
                                     </p>
-                                    
+
                                     <MapContainer
                                         center={mapCenter}
                                         zoom={13}
@@ -317,7 +319,7 @@ const PoliceConnect = () => {
                                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                         />
                                         <MapClickHandler onMapClick={handleMapClick} />
-                                        
+
                                         {/* Show all reported issues */}
                                         {allIssues.filter(issue => issue.latitude && issue.longitude).map((issue) => (
                                             <Marker
@@ -327,16 +329,15 @@ const PoliceConnect = () => {
                                             >
                                                 <Popup>
                                                     <div style={{ minWidth: '250px' }}>
-                                                        <h4 style={{ 
+                                                        <h4 style={{
                                                             marginBottom: 'var(--space-sm)',
                                                             color: getStatusColor(issue.status)
                                                         }}>
                                                             Issue #{issue.id}
                                                         </h4>
-                                                        <span className={`badge ${
-                                                            issue.status === 'COMPLETED' ? 'badge-success' : 
-                                                            issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'
-                                                        }`} style={{ marginBottom: 'var(--space-sm)', display: 'inline-block' }}>
+                                                        <span className={`badge ${issue.status === 'COMPLETED' ? 'badge-success' :
+                                                                issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'
+                                                            }`} style={{ marginBottom: 'var(--space-sm)', display: 'inline-block' }}>
                                                             {issue.status}
                                                         </span>
                                                         <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
@@ -347,11 +348,11 @@ const PoliceConnect = () => {
                                                                 <strong>📍 Location:</strong> {issue.location}
                                                             </p>
                                                         )}
-                                                        <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                        <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 'var(--space-xs)' }}>
                                                             👮 Reported by: {issue.reporter_name}
                                                         </p>
                                                         {issue.assigned_to_name && (
-                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 'var(--space-xs)' }}>
                                                                 👷 Assigned to: {issue.assigned_to_name}
                                                             </p>
                                                         )}
@@ -362,7 +363,7 @@ const PoliceConnect = () => {
                                                 </Popup>
                                             </Marker>
                                         ))}
-                                        
+
                                         {/* Show selected location */}
                                         {selectedLocation && (
                                             <Marker
@@ -438,8 +439,8 @@ const PoliceConnect = () => {
                                                 </div>
 
                                                 <div className="flex" style={{ gap: 'var(--space-md)' }}>
-                                                    <button 
-                                                        type="submit" 
+                                                    <button
+                                                        type="submit"
                                                         className="btn btn-primary"
                                                         style={{ flex: 1 }}
                                                         disabled={!newIssue.description}
@@ -468,7 +469,7 @@ const PoliceConnect = () => {
                                         >
                                             <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>🗺️</div>
                                             <h3>Click on the Map</h3>
-                                            <p style={{ color: 'var(--gray-600)' }}>
+                                            <p style={{ color: 'var(--gray-700)', fontWeight: '500' }}>
                                                 Click anywhere on the map to report an infrastructure issue
                                             </p>
                                         </motion.div>
@@ -516,7 +517,7 @@ const PoliceConnect = () => {
                                                             </p>
                                                         )}
                                                         {issue.assigned_to_name && (
-                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-700)', fontWeight: '500', marginBottom: 'var(--space-xs)' }}>
                                                                 👷 Assigned to: {issue.assigned_to_name}
                                                             </p>
                                                         )}

@@ -36,14 +36,16 @@ const EmergencyChat = () => {
     return (
         <div className="page-wrapper">
             <div className="page-content container">
-                <div className="flex-between mb-lg">
-                    <h1>Emergency Broadcast</h1>
-                    <Link to="/emergency" className="btn btn-secondary">← Back</Link>
+                <div className="glass-card" style={{ marginBottom: 'var(--space-xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
+                    <div className="flex-between">
+                        <h1 style={{ marginBottom: 0 }}>Emergency Broadcast</h1>
+                        <Link to="/emergency" className="btn btn-secondary">← Back</Link>
+                    </div>
                 </div>
 
                 <div className="glass-card">
                     <h3>Broadcast Messages</h3>
-                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)' }}>
+                    <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-sm)' }}>
                         Send broadcast messages to all emergency channels
                     </p>
 
