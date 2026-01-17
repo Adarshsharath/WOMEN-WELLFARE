@@ -20,9 +20,11 @@ import FakeCall from './pages/women/FakeCall';
 import PoliceDashboard from './pages/police/Dashboard';
 import FlagZone from './pages/police/FlagZone';
 import PoliceConnect from './pages/police/Connect';
+import MarkZones from './pages/police/MarkZones';
 
 // Infrastructure pages
 import InfrastructureDashboard from './pages/infrastructure/Dashboard';
+import InfrastructureChat from './pages/infrastructure/Chat';
 
 // Cybersecurity pages
 import CybersecurityMonitoring from './pages/cybersecurity/Monitoring';
@@ -58,9 +60,11 @@ function App() {
                     <Route path="/police" element={<ProtectedRoute allowedRoles={['POLICE']}><PoliceDashboard /></ProtectedRoute>} />
                     <Route path="/police/flag-zone" element={<ProtectedRoute allowedRoles={['POLICE']}><FlagZone /></ProtectedRoute>} />
                     <Route path="/police/connect" element={<ProtectedRoute allowedRoles={['POLICE']}><PoliceConnect /></ProtectedRoute>} />
+                    <Route path="/police/mark-zones" element={<ProtectedRoute allowedRoles={['POLICE']}><MarkZones /></ProtectedRoute>} />
 
                     {/* Infrastructure routes */}
                     <Route path="/infrastructure" element={<ProtectedRoute allowedRoles={['INFRASTRUCTURE']}><InfrastructureDashboard /></ProtectedRoute>} />
+                    <Route path="/infrastructure/chat" element={<ProtectedRoute allowedRoles={['INFRASTRUCTURE']}><InfrastructureChat /></ProtectedRoute>} />
 
                     {/* Cybersecurity routes */}
                     <Route path="/cybersecurity" element={<ProtectedRoute allowedRoles={['CYBERSECURITY']}><CybersecurityMonitoring /></ProtectedRoute>} />

@@ -131,8 +131,11 @@ class FlaggedZone(db.Model):
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     risk_level = db.Column(db.String(20), nullable=False)  # LOW, MEDIUM, HIGH, CRITICAL
-    description = db.Column(db.Text)
+    reason = db.Column(db.Text, nullable=False)  # Reason for marking the zone
+    description = db.Column(db.Text)  # Additional details
+    is_active = db.Column(db.Boolean, default=True)  # Whether zone is currently marked
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    unmarked_at = db.Column(db.DateTime)  # When the zone was unmarked
     
     def to_dict(self):
         return {
@@ -142,8 +145,11 @@ class FlaggedZone(db.Model):
             'latitude': self.latitude,
             'longitude': self.longitude,
             'risk_level': self.risk_level,
+            'reason': self.reason,
             'description': self.description,
-            'timestamp': self.timestamp.isoformat()
+            'is_active': self.is_active,
+            'timestamp': self.timestamp.isoformat(),
+            'unmarked_at': self.unmarked_at.isoformat() if self.unmarked_at else None
         }
 
 

@@ -93,3 +93,45 @@ def get_my_issues(current_user):
         'success': True,
         'issues': [issue.to_dict() for issue in issues]
     }), 200
+
+
+@infrastructure_bp.route('/chat', methods=['GET'])
+@token_required
+@role_required('INFRASTRUCTURE')
+def get_infrastructure_chat(current_user):
+    """Get infrastructure chat messages"""
+    from models import ChatMessage
+    messages = ChatMessage.query.filter_by(
+        chat_type='INFRASTRUCTURE'
+    ).order_by(ChatMessage.timestamp.desc()).limit(100).all()
+    
+    return jsonify({
+        'success': True,
+        'messages': [msg.to_dict() for msg in reversed(messages)]
+    }), 200
+
+
+@infrastructure_bp.route('/chat', methods=['POST'])
+@token_required
+@role_required('INFRASTRUCTURE')
+def send_infrastructure_chat(current_user):
+    """Send message in infrastructure chat"""
+    from models import ChatMessage
+    data = request.get_json()
+    
+    if not data.get('message'):
+        return jsonify({'error': 'Message required'}), 400
+    
+    message = ChatMessage(
+        sender_id=current_user.id,
+        message_text=data['message'],
+        chat_type='INFRASTRUCTURE'
+    )
+    
+    db.session.add(message)
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': message.to_dict()
+    }), 201

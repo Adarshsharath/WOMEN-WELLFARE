@@ -39,59 +39,109 @@ const Login = () => {
     };
 
     return (
-        <div className="page-wrapper">
-            <div className="page-content flex-center">
+        <div className="page-wrapper" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="page-content flex-center" style={{ width: '100%', padding: 'var(--space-xl)' }}>
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
+                    initial={{ opacity: 0, y: 30, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
                     className="glass-card"
-                    style={{ maxWidth: '450px', width: '100%' }}
+                    style={{ maxWidth: '480px', width: '100%', padding: 'var(--space-2xl)' }}
                 >
-                    <h1 className="text-center" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                        SafeSpace
-                    </h1>
-                    <p className="text-center" style={{ color: 'var(--gray-600)' }}>Welcome back. Please login to your account.</p>
+                    <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
+                        <motion.h1 
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2 }}
+                            style={{ 
+                                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', 
+                                WebkitBackgroundClip: 'text', 
+                                WebkitTextFillColor: 'transparent',
+                                fontSize: 'var(--font-size-4xl)',
+                                fontWeight: 'bold',
+                                marginBottom: 'var(--space-sm)'
+                            }}
+                        >
+                            🛡️ SafeSpace
+                        </motion.h1>
+                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-base)' }}>
+                            Welcome back! Sign in to continue.
+                        </p>
+                    </div>
 
                     {error && (
-                        <div style={{ padding: 'var(--space-md)', background: 'var(--danger)', color: 'white', borderRadius: 'var(--radius-md)', marginTop: 'var(--space-lg)' }}>
-                            {error}
-                        </div>
+                        <motion.div 
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            style={{ 
+                                padding: 'var(--space-md)', 
+                                background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)', 
+                                color: 'white', 
+                                borderRadius: 'var(--radius-lg)', 
+                                marginBottom: 'var(--space-lg)',
+                                boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
+                            }}
+                        >
+                            ⚠️ {error}
+                        </motion.div>
                     )}
 
-                    <form onSubmit={handleSubmit} style={{ marginTop: 'var(--space-xl)' }}>
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label className="form-label">Email</label>
+                            <label className="form-label" style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>
+                                📧 Email Address
+                            </label>
                             <input
                                 type="email"
                                 className="form-input"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                placeholder="Enter your email"
                                 required
                             />
                         </div>
 
                         <div className="form-group">
-                            <label className="form-label">Password</label>
+                            <label className="form-label" style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>
+                                🔒 Password
+                            </label>
                             <input
                                 type="password"
                                 className="form-input"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
                                 required
                             />
                         </div>
 
-                        <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%' }}>
-                            {loading ? 'Logging in...' : 'Login'}
+                        <button 
+                            type="submit" 
+                            className="btn btn-primary" 
+                            disabled={loading} 
+                            style={{ 
+                                width: '100%', 
+                                padding: 'var(--space-lg)',
+                                fontSize: 'var(--font-size-lg)',
+                                fontWeight: '600',
+                                marginTop: 'var(--space-md)'
+                            }}
+                        >
+                            {loading ? '⏳ Logging in...' : '🚀 Login'}
                         </button>
                     </form>
 
-                    <div style={{ marginTop: 'var(--space-xl)', textAlign: 'center' }}>
-                        <p>Don't have an account?</p>
-                        <div style={{ display: 'flex', gap: 'var(--space-md)', marginTop: 'var(--space-md)' }}>
-                            <Link to="/register/woman" className="btn btn-outline" style={{ flex: 1 }}>Register as Woman</Link>
-                            <Link to="/register/community" className="btn btn-outline" style={{ flex: 1 }}>Community Registration</Link>
+                    <div style={{ marginTop: 'var(--space-2xl)', textAlign: 'center' }}>
+                        <p style={{ color: 'var(--gray-600)', marginBottom: 'var(--space-md)' }}>
+                            Don't have an account?
+                        </p>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                            <Link to="/register/woman" className="btn btn-outline" style={{ width: '100%' }}>
+                                👩 Register as Woman
+                            </Link>
+                            <Link to="/register/community" className="btn btn-secondary" style={{ width: '100%' }}>
+                                🏢 Community Registration
+                            </Link>
                         </div>
                     </div>
                 </motion.div>

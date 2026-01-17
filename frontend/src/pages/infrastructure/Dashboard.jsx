@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { infrastructureAPI } from '../../utils/api';
@@ -45,13 +46,23 @@ const InfrastructureDashboard = () => {
             <nav className="navbar">
                 <div className="navbar-container container">
                     <div className="navbar-brand">SafeSpace Infrastructure</div>
-                    <button onClick={logout} className="btn btn-sm btn-secondary">Logout</button>
+                    <ul className="navbar-nav">
+                        <li><Link to="/infrastructure" className="nav-link active">Dashboard</Link></li>
+                        <li><Link to="/infrastructure/chat" className="nav-link">Team Chat</Link></li>
+                        <li><button onClick={logout} className="btn btn-sm btn-secondary">Logout</button></li>
+                    </ul>
                 </div>
             </nav>
 
             <div className="page-content container">
-                <h1>Infrastructure Dashboard</h1>
-                <p style={{ color: 'var(--gray-600)' }}>Manage reported issues</p>
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                        🏗️ Infrastructure Dashboard
+                    </h1>
+                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)' }}>
+                        Manage and resolve reported infrastructure issues
+                    </p>
+                </motion.div>
 
                 <div className="flex mb-lg" style={{ gap: 'var(--space-md)', marginTop: 'var(--space-xl)' }}>
                     {['ALL', 'PENDING', 'ACCEPTED', 'COMPLETED'].map(status => (

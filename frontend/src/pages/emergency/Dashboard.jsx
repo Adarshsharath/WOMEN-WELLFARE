@@ -45,10 +45,14 @@ const EmergencyDashboard = () => {
 
             <div className="page-content container">
                 <div className="flex-between mb-lg">
-                    <div>
-                        <h1>Emergency Response Dashboard</h1>
-                        <p style={{ color: 'var(--gray-600)' }}>Monitor all SOS events</p>
-                    </div>
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                        <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
+                            🚨 Emergency Response Dashboard
+                        </h1>
+                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-lg)' }}>
+                            Monitor and coordinate all SOS events
+                        </p>
+                    </motion.div>
                     <div className="flex" style={{ gap: 'var(--space-sm)' }}>
                         <button
                             onClick={() => setViewMode('list')}

@@ -94,6 +94,8 @@ export const womenAPI = {
         method: 'POST',
         body: JSON.stringify(data),
     }),
+
+    getFlaggedZones: () => apiRequest('/police/flagged-zones'),
 };
 
 // Police API
@@ -102,14 +104,18 @@ export const policeAPI = {
 
     getSOSDetails: (id) => apiRequest(`/police/sos/${id}`),
 
-    flagZone: (data) => apiRequest('/police/flag-zone', {
+    markZone: (data) => apiRequest('/police/flag-zone', {
         method: 'POST',
         body: JSON.stringify(data),
     }),
 
     getFlaggedZones: () => apiRequest('/police/flagged-zones'),
 
-    deleteFlag: (id) => apiRequest(`/police/flagged-zones/${id}`, {
+    unmarkZone: (id) => apiRequest(`/police/flagged-zones/${id}/unmark`, {
+        method: 'PUT',
+    }),
+
+    deleteFlaggedZone: (id) => apiRequest(`/police/flagged-zones/${id}`, {
         method: 'DELETE',
     }),
 
@@ -141,6 +147,13 @@ export const infrastructureAPI = {
     }),
 
     getMyIssues: () => apiRequest('/infrastructure/my-issues'),
+
+    getChatMessages: () => apiRequest('/infrastructure/chat'),
+
+    sendChatMessage: (message) => apiRequest('/infrastructure/chat', {
+        method: 'POST',
+        body: JSON.stringify({ message }),
+    }),
 };
 
 // Cybersecurity API

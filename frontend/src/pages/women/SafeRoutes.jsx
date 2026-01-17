@@ -19,6 +19,9 @@ const SafeRoutes = () => {
     const [routes, setRoutes] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    
+    // Flagged zones
+    const [flaggedZones, setFlaggedZones] = useState([]);
 
     // Preferences
     const [safetyPriority, setSafetyPriority] = useState(70);
@@ -38,6 +41,38 @@ const SafeRoutes = () => {
         iconSize: [40, 40],
         iconAnchor: [20, 20]
     });
+    
+    // Red flag icon for danger zones
+    const redFlagIcon = L.divIcon({
+        html: `<div style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚩</div>`,
+        className: 'custom-flag-icon',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
+
+    useEffect(() => {
+        loadFlaggedZones();
+    }, []);
+
+    const loadFlaggedZones = async () => {
+        try {
+            const data = await womenAPI.getFlaggedZones();
+            setFlaggedZones(data.zones || []);
+        } catch (error) {
+            console.error('Failed to load flagged zones:', error);
+        }
+    };
+
+    const getRiskColor = (riskLevel) => {
+        switch (riskLevel) {
+            case 'CRITICAL': return '#DC2626';
+            case 'HIGH': return '#EF4444';
+            case 'MEDIUM': return '#F59E0B';
+            case 'LOW': return '#10B981';
+            default: return '#6B7280';
+        }
+    };
 
     const useCurrentLocation = () => {
         if (navigator.geolocation) {
@@ -374,6 +409,91 @@ const SafeRoutes = () => {
                                     <Popup>Destination: {selectedDest.display_name}</Popup>
                                 </Marker>
                             )}
+                            
+                            {/* Flagged danger zones */}
+                            {flaggedZones.map((zone) => (
+                                <Marker
+                                    key={zone.id}
+                                    position={[zone.latitude, zone.longitude]}
+                                    icon={redFlagIcon}
+                                >
+                                    <Popup>
+                                        <div style={{ minWidth: '250px', padding: 'var(--space-sm)' }}>
+                                            <h4 style={{ 
+                                                marginBottom: 'var(--space-sm)',
+                                                color: getRiskColor(zone.risk_level),
+                                                fontSize: 'var(--font-size-lg)',
+                                                fontWeight: 'bold'
+                                            }}>
+                                                ⚠️ {zone.risk_level} RISK ZONE
+                                            </h4>
+                                            <div style={{ 
+                                                background: 'rgba(239, 68, 68, 0.1)', 
+                                                padding: 'var(--space-sm)', 
+                                                borderRadius: 'var(--radius-md)',
+                                                marginBottom: 'var(--space-sm)',
+                                                borderLeft: `4px solid ${getRiskColor(zone.risk_level)}`
+                                            }}>
+                                                <p style={{ 
+                                                    fontSize: 'var(--font-size-sm)', 
+                                                    marginBottom: 'var(--space-xs)',
+                                                    fontWeight: '600'
+                                                }}>
+                                                    <strong>⚠️ Reason:</strong>
+                                                </p>
+                                                <p style={{ 
+                                                    fontSize: 'var(--font-size-sm)', 
+                                                    marginBottom: 0,
+                                                    lineHeight: '1.5'
+                                                }}>
+                                                    {zone.reason}
+                                                </p>
+                                            </div>
+                                            {zone.description && (
+                                                <p style={{ 
+                                                    fontSize: 'var(--font-size-xs)', 
+                                                    marginBottom: 'var(--space-xs)',
+                                                    color: 'var(--gray-600)'
+                                                }}>
+                                                    <strong>Details:</strong> {zone.description}
+                                                </p>
+                                            )}
+                                            <div style={{ 
+                                                borderTop: '1px solid var(--gray-200)', 
+                                                paddingTop: 'var(--space-xs)',
+                                                marginTop: 'var(--space-sm)'
+                                            }}>
+                                                <p style={{ 
+                                                    fontSize: 'var(--font-size-xs)', 
+                                                    color: 'var(--gray-500)',
+                                                    marginBottom: 'var(--space-xs)'
+                                                }}>
+                                                    👮 Reported by: {zone.police_name}
+                                                </p>
+                                                <p style={{ 
+                                                    fontSize: 'var(--font-size-xs)', 
+                                                    color: 'var(--gray-500)',
+                                                    marginBottom: 0
+                                                }}>
+                                                    📅 {new Date(zone.timestamp).toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <div style={{ 
+                                                marginTop: 'var(--space-sm)',
+                                                padding: 'var(--space-xs)',
+                                                background: '#FEF3C7',
+                                                borderRadius: 'var(--radius-sm)',
+                                                fontSize: 'var(--font-size-xs)',
+                                                fontWeight: '600',
+                                                color: '#92400E',
+                                                textAlign: 'center'
+                                            }}>
+                                                🛡️ Avoid this area for your safety
+                                            </div>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            ))}
                         </MapContainer>
 
                         {/* Directions Overlay */}

@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from models import db, SOSEvent, FlaggedZone, ChatMessage, Issue
 from auth import token_required, role_required
+from datetime import datetime
 
 police_bp = Blueprint('police', __name__)
 
@@ -47,7 +48,7 @@ def flag_zone(current_user):
     data = request.get_json()
     
     # Validate required fields
-    required = ['latitude', 'longitude', 'risk_level']
+    required = ['latitude', 'longitude', 'risk_level', 'reason']
     for field in required:
         if field not in data:
             return jsonify({'error': f'Missing required field: {field}'}), 400
@@ -63,7 +64,9 @@ def flag_zone(current_user):
         latitude=data['latitude'],
         longitude=data['longitude'],
         risk_level=data['risk_level'],
-        description=data.get('description', '')
+        reason=data['reason'],
+        description=data.get('description', ''),
+        is_active=True
     )
     
     db.session.add(flagged_zone)
@@ -71,7 +74,7 @@ def flag_zone(current_user):
     
     return jsonify({
         'success': True,
-        'message': 'Zone flagged successfully',
+        'message': 'Zone marked successfully',
         'zone': flagged_zone.to_dict()
     }), 201
 
@@ -80,8 +83,13 @@ def flag_zone(current_user):
 @token_required
 @role_required('POLICE', 'WOMAN')
 def get_flagged_zones(current_user):
-    """Get all flagged zones"""
-    zones = FlaggedZone.query.order_by(FlaggedZone.timestamp.desc()).all()
+    """Get all flagged zones (active only for women, all for police)"""
+    if current_user.role == 'WOMAN':
+        # Women only see active zones
+        zones = FlaggedZone.query.filter_by(is_active=True).order_by(FlaggedZone.timestamp.desc()).all()
+    else:
+        # Police see all zones
+        zones = FlaggedZone.query.order_by(FlaggedZone.timestamp.desc()).all()
     
     return jsonify({
         'success': True,
@@ -89,11 +97,38 @@ def get_flagged_zones(current_user):
     }), 200
 
 
+@police_bp.route('/flagged-zones/<int:zone_id>/unmark', methods=['PUT'])
+@token_required
+@role_required('POLICE')
+def unmark_zone(current_user, zone_id):
+    """Unmark a flagged zone (mark as resolved)"""
+    zone = FlaggedZone.query.get(zone_id)
+    
+    if not zone:
+        return jsonify({'error': 'Zone not found'}), 404
+    
+    # Only creator or admin can unmark
+    if zone.police_id != current_user.id and current_user.role != 'ADMIN':
+        return jsonify({'error': 'Unauthorized'}), 403
+    
+    # Mark as inactive
+    zone.is_active = False
+    zone.unmarked_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'Zone unmarked successfully',
+        'zone': zone.to_dict()
+    }), 200
+
+
 @police_bp.route('/flagged-zones/<int:zone_id>', methods=['DELETE'])
 @token_required
 @role_required('POLICE')
 def delete_flagged_zone(current_user, zone_id):
-    """Delete a flagged zone (only by creator or admin)"""
+    """Delete a flagged zone permanently (only by creator or admin)"""
     zone = FlaggedZone.query.get(zone_id)
     
     if not zone:
@@ -108,7 +143,7 @@ def delete_flagged_zone(current_user, zone_id):
     
     return jsonify({
         'success': True,
-        'message': 'Zone deleted'
+        'message': 'Zone deleted permanently'
     }), 200
 
 
