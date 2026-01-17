@@ -513,7 +513,7 @@ const SafeRoutes = () => {
                             ))}
                         </MapContainer>
 
-                        {/* Enhanced Directions Overlay with Navigation Support */}
+                        {/* Enhanced Directions Overlay with Navigation Support - BIGGER SIZE */}
                         {(activeRouteForDirections || navigatingRoute) && (
                             <motion.div
                                 initial={{ x: -100, opacity: 0 }}
@@ -522,41 +522,42 @@ const SafeRoutes = () => {
                                     position: 'absolute',
                                     top: '20px',
                                     left: '0px',
-                                    width: '350px',
-                                    maxHeight: '85%',
+                                    width: '480px',
+                                    height: '80vh',
+                                    maxHeight: '80vh',
                                     background: 'white',
                                     zIndex: 1000,
-                                    borderRadius: '16px',
-                                    boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
+                                    borderRadius: '20px',
+                                    boxShadow: '0 15px 50px rgba(0,0,0,0.25)',
                                     display: 'flex',
                                     flexDirection: 'column',
-                                    border: `3px solid ${navigatingRoute?.color || activeRouteForDirections?.color || 'var(--primary-light)'}`
+                                    border: `4px solid ${navigatingRoute?.color || activeRouteForDirections?.color || 'var(--primary-light)'}`
                                 }}
                             >
-                                <div style={{ padding: '16px', borderBottom: '1px solid var(--gray-200)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: navigatingRoute ? `linear-gradient(135deg, ${navigatingRoute.color} 0%, ${navigatingRoute.color}dd 100%)` : 'var(--gray-50)', borderTopLeftRadius: '14px', borderTopRightRadius: '14px' }}>
-                                    <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '8px', color: navigatingRoute ? 'white' : 'var(--gray-900)' }}>
-                                        {navigatingRoute ? '🚗 Navigating' : '🧭 Directions'}
+                                <div style={{ padding: '20px', borderBottom: '2px solid var(--gray-200)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: navigatingRoute ? `linear-gradient(135deg, ${navigatingRoute.color} 0%, ${navigatingRoute.color}dd 100%)` : 'var(--gray-50)', borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }}>
+                                    <h3 style={{ fontSize: '20px', fontWeight: 700, margin: 0, display: 'flex', alignItems: 'center', gap: '10px', color: navigatingRoute ? 'white' : 'var(--gray-900)' }}>
+                                        {navigatingRoute ? '🚗 Navigating' : '🧭 Turn-by-Turn Directions'}
                                     </h3>
                                     <button
                                         onClick={() => {
                                             setActiveRouteForDirections(null);
                                             setNavigatingRoute(null);
                                         }}
-                                        style={{ background: 'none', border: 'none', fontSize: '20px', cursor: 'pointer', color: navigatingRoute ? 'white' : 'var(--gray-500)' }}
+                                        style={{ background: 'none', border: 'none', fontSize: '28px', cursor: 'pointer', color: navigatingRoute ? 'white' : 'var(--gray-500)', fontWeight: 'bold' }}
                                     >×</button>
                                 </div>
                                 
                                 {navigatingRoute && (
-                                    <div style={{ padding: '12px', background: `${navigatingRoute.color}15`, borderBottom: `1px solid ${navigatingRoute.color}40`, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <div style={{ fontSize: '24px', animation: 'pulse 2s ease-in-out infinite' }}>📍</div>
+                                    <div style={{ padding: '16px', background: `${navigatingRoute.color}15`, borderBottom: `2px solid ${navigatingRoute.color}40`, display: 'flex', alignItems: 'center', gap: '12px' }}>
+                                        <div style={{ fontSize: '32px', animation: 'pulse 2s ease-in-out infinite' }}>📍</div>
                                         <div style={{ flex: 1 }}>
-                                            <div style={{ fontSize: '12px', color: navigatingRoute.color, fontWeight: '600' }}>Active Navigation</div>
-                                            <div style={{ fontSize: '14px', fontWeight: '700', color: navigatingRoute.color }}>{navigatingRoute.label}</div>
+                                            <div style={{ fontSize: '14px', color: navigatingRoute.color, fontWeight: '600' }}>Active Navigation</div>
+                                            <div style={{ fontSize: '18px', fontWeight: '700', color: navigatingRoute.color }}>{navigatingRoute.label}</div>
                                         </div>
                                     </div>
                                 )}
                                 
-                                <div style={{ overflowY: 'auto', padding: '16px' }}>
+                                <div style={{ overflowY: 'auto', padding: '20px' }}>
                                     {(navigatingRoute || activeRouteForDirections) && (navigatingRoute?.steps || activeRouteForDirections?.steps)?.length > 0 ? (
                                         (navigatingRoute?.steps || activeRouteForDirections?.steps).map((step, sIdx) => {
                                             const routeColor = navigatingRoute?.color || activeRouteForDirections?.color || '#8B5CF6';
@@ -568,24 +569,24 @@ const SafeRoutes = () => {
                                                     transition={{ delay: sIdx * 0.05 }}
                                                     style={{ 
                                                         display: 'flex', 
-                                                        gap: '12px', 
-                                                        marginBottom: '16px', 
-                                                        borderLeft: `4px solid ${routeColor}`, 
-                                                        paddingLeft: '12px',
+                                                        gap: '16px', 
+                                                        marginBottom: '20px', 
+                                                        borderLeft: `5px solid ${routeColor}`, 
+                                                        paddingLeft: '16px',
                                                         background: navigatingRoute ? `${routeColor}10` : 'transparent',
-                                                        padding: '12px',
-                                                        borderRadius: '8px'
+                                                        padding: '16px',
+                                                        borderRadius: '12px'
                                                     }}
                                                 >
-                                                    <div style={{ background: navigatingRoute ? routeColor : `${routeColor}20`, color: navigatingRoute ? 'white' : routeColor, minWidth: '28px', height: '28px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '12px', fontWeight: 700, flexShrink: 0 }}>
+                                                    <div style={{ background: navigatingRoute ? routeColor : `${routeColor}20`, color: navigatingRoute ? 'white' : routeColor, minWidth: '36px', height: '36px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 700, flexShrink: 0 }}>
                                                         {sIdx + 1}
                                                     </div>
                                                     <div style={{ flex: 1 }}>
-                                                        <p style={{ fontSize: '14px', margin: '0 0 6px 0', color: 'var(--gray-800)', fontWeight: '500', lineHeight: '1.4' }}>
+                                                        <p style={{ fontSize: '16px', margin: '0 0 8px 0', color: 'var(--gray-900)', fontWeight: '600', lineHeight: '1.5' }}>
                                                             {step.instruction}
                                                         </p>
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                            <span style={{ fontSize: '12px', color: routeColor, fontWeight: 700, background: `${routeColor}20`, padding: '2px 8px', borderRadius: '4px' }}>
+                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                                            <span style={{ fontSize: '14px', color: routeColor, fontWeight: 700, background: `${routeColor}20`, padding: '4px 12px', borderRadius: '6px' }}>
                                                                 📏 {step.distance > 1000 ? `${(step.distance / 1000).toFixed(1)} km` : `${Math.round(step.distance)} m`}
                                                             </span>
                                                         </div>
