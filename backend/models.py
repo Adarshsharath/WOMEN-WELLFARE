@@ -162,6 +162,8 @@ class Issue(db.Model):
     assigned_to_infra_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     description = db.Column(db.Text, nullable=False)
     location = db.Column(db.String(255))
+    latitude = db.Column(db.Float)  # Latitude coordinate of the issue
+    longitude = db.Column(db.Float)  # Longitude coordinate of the issue
     status = db.Column(db.String(20), default='PENDING')  # PENDING, ACCEPTED, COMPLETED
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
     accepted_at = db.Column(db.DateTime)
@@ -178,6 +180,8 @@ class Issue(db.Model):
             'assigned_to_name': self.assigned_to.name if self.assigned_to else None,
             'description': self.description,
             'location': self.location,
+            'latitude': self.latitude,
+            'longitude': self.longitude,
             'status': self.status,
             'timestamp': self.timestamp.isoformat(),
             'accepted_at': self.accepted_at.isoformat() if self.accepted_at else None,

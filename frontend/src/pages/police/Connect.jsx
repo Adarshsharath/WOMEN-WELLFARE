@@ -1,24 +1,57 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
+import L from 'leaflet';
 import { policeAPI } from '../../utils/api';
+import 'leaflet/dist/leaflet.css';
+
+// Red flag icon for pending issues
+const redFlagIcon = L.divIcon({
+    html: `<div style="font-size: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">🚩</div>`,
+    className: 'custom-flag-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 32],
+    popupAnchor: [0, -32]
+});
+
+// Component to handle map clicks
+function MapClickHandler({ onMapClick }) {
+    useMapEvents({
+        click: (e) => {
+            onMapClick(e.latlng);
+        },
+    });
+    return null;
+}
 
 const PoliceConnect = () => {
     const [chatMessages, setChatMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
     const [issues, setIssues] = useState([]);
-    const [newIssue, setNewIssue] = useState({ description: '', location: '' });
+    const [allIssues, setAllIssues] = useState([]);
+    const [newIssue, setNewIssue] = useState({ description: '', location: '', latitude: '', longitude: '' });
     const [activeTab, setActiveTab] = useState('chat'); // 'chat' or 'issues'
     const [isChatExpanded, setIsChatExpanded] = useState(false);
     const messagesEndRef = useRef(null);
     const chatContainerRef = useRef(null);
+    
+    // Map state
+    const [mapCenter, setMapCenter] = useState([12.9716, 77.5946]); // Bangalore
+    const [selectedLocation, setSelectedLocation] = useState(null);
+    const [showIssueForm, setShowIssueForm] = useState(false);
 
     useEffect(() => {
         loadChat();
         loadIssues();
+        loadAllIssues();
         const interval = setInterval(() => {
             if (activeTab === 'chat') loadChat();
-        }, 5000); // Refresh every 5 seconds
+            if (activeTab === 'issues') {
+                loadIssues();
+                loadAllIssues();
+            }
+        }, 10000); // Refresh every 10 seconds
         return () => clearInterval(interval);
     }, [activeTab]);
 
@@ -43,6 +76,25 @@ const PoliceConnect = () => {
             console.error('Failed to load issues:', error);
         }
     };
+    
+    const loadAllIssues = async () => {
+        try {
+            const data = await policeAPI.getAllIssues();
+            setAllIssues(data.issues || []);
+        } catch (error) {
+            console.error('Failed to load all issues:', error);
+        }
+    };
+    
+    const handleMapClick = (latlng) => {
+        setSelectedLocation(latlng);
+        setNewIssue({
+            ...newIssue,
+            latitude: latlng.lat.toFixed(6),
+            longitude: latlng.lng.toFixed(6)
+        });
+        setShowIssueForm(true);
+    };
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,13 +115,32 @@ const PoliceConnect = () => {
 
     const handleReportIssue = async (e) => {
         e.preventDefault();
+        if (!newIssue.description || !newIssue.latitude || !newIssue.longitude) return;
+
         try {
-            await policeAPI.reportIssue(newIssue);
-            setNewIssue({ description: '', location: '' });
+            await policeAPI.reportIssue({
+                description: newIssue.description,
+                location: newIssue.location,
+                latitude: parseFloat(newIssue.latitude),
+                longitude: parseFloat(newIssue.longitude)
+            });
+            setNewIssue({ description: '', location: '', latitude: '', longitude: '' });
+            setSelectedLocation(null);
+            setShowIssueForm(false);
             loadIssues();
-            alert('Issue reported successfully');
+            loadAllIssues();
         } catch (error) {
             console.error('Failed to report issue:', error);
+            alert('Failed to report issue: ' + error.message);
+        }
+    };
+    
+    const getStatusColor = (status) => {
+        switch (status) {
+            case 'COMPLETED': return 'var(--success)';
+            case 'ACCEPTED': return 'var(--info)';
+            case 'PENDING': return 'var(--warning)';
+            default: return 'var(--gray-500)';
         }
     };
 
@@ -221,69 +292,243 @@ const PoliceConnect = () => {
                             exit={{ opacity: 0, y: -20 }}
                             style={{ flex: 1, overflow: 'auto', paddingBottom: 'var(--space-lg)' }}
                         >
-                            <div className="glass-card mb-lg">
-                                <h3 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-                                    <span>🔧</span> Report Issue to Infrastructure
-                                </h3>
-                                <form onSubmit={handleReportIssue} style={{ marginTop: 'var(--space-lg)' }}>
-                                    <div className="form-group">
-                                        <label className="form-label">Description</label>
-                                        <textarea
-                                            className="form-textarea"
-                                            value={newIssue.description}
-                                            onChange={(e) => setNewIssue({ ...newIssue, description: e.target.value })}
-                                            placeholder="Describe the infrastructure issue..."
-                                            required
-                                            rows="4"
+                            <div className="grid grid-2" style={{ gap: 'var(--space-lg)', alignItems: 'start' }}>
+                                {/* Map Section */}
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="glass-card"
+                                    style={{ height: '600px', overflow: 'hidden' }}
+                                >
+                                    <h3 style={{ marginBottom: 'var(--space-md)' }}>
+                                        🗺️ Infrastructure Issues Map
+                                    </h3>
+                                    <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-md)' }}>
+                                        🚩 Red flags show pending issues. Click on map to report new issue.
+                                    </p>
+                                    
+                                    <MapContainer
+                                        center={mapCenter}
+                                        zoom={13}
+                                        style={{ height: '500px', borderRadius: 'var(--radius-lg)' }}
+                                    >
+                                        <TileLayer
+                                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                         />
-                                    </div>
-                                    <div className="form-group">
-                                        <label className="form-label">Location</label>
-                                        <input
-                                            type="text"
-                                            className="form-input"
-                                            value={newIssue.location}
-                                            onChange={(e) => setNewIssue({ ...newIssue, location: e.target.value })}
-                                            placeholder="Location of the issue"
-                                        />
-                                    </div>
-                                    <button type="submit" className="btn btn-primary">📋 Report Issue</button>
-                                </form>
-                            </div>
+                                        <MapClickHandler onMapClick={handleMapClick} />
+                                        
+                                        {/* Show all reported issues */}
+                                        {allIssues.filter(issue => issue.latitude && issue.longitude).map((issue) => (
+                                            <Marker
+                                                key={issue.id}
+                                                position={[issue.latitude, issue.longitude]}
+                                                icon={redFlagIcon}
+                                            >
+                                                <Popup>
+                                                    <div style={{ minWidth: '250px' }}>
+                                                        <h4 style={{ 
+                                                            marginBottom: 'var(--space-sm)',
+                                                            color: getStatusColor(issue.status)
+                                                        }}>
+                                                            Issue #{issue.id}
+                                                        </h4>
+                                                        <span className={`badge ${
+                                                            issue.status === 'COMPLETED' ? 'badge-success' : 
+                                                            issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'
+                                                        }`} style={{ marginBottom: 'var(--space-sm)', display: 'inline-block' }}>
+                                                            {issue.status}
+                                                        </span>
+                                                        <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
+                                                            <strong>📋 Issue:</strong> {issue.description}
+                                                        </p>
+                                                        {issue.location && (
+                                                            <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
+                                                                <strong>📍 Location:</strong> {issue.location}
+                                                            </p>
+                                                        )}
+                                                        <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                            👮 Reported by: {issue.reporter_name}
+                                                        </p>
+                                                        {issue.assigned_to_name && (
+                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                                👷 Assigned to: {issue.assigned_to_name}
+                                                            </p>
+                                                        )}
+                                                        <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-500)' }}>
+                                                            {new Date(issue.timestamp).toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                </Popup>
+                                            </Marker>
+                                        ))}
+                                        
+                                        {/* Show selected location */}
+                                        {selectedLocation && (
+                                            <Marker
+                                                position={[selectedLocation.lat, selectedLocation.lng]}
+                                                icon={L.divIcon({
+                                                    html: `<div style="font-size: 32px;">📍</div>`,
+                                                    className: 'custom-marker-icon',
+                                                    iconSize: [32, 32],
+                                                    iconAnchor: [16, 32]
+                                                })}
+                                            />
+                                        )}
+                                    </MapContainer>
+                                </motion.div>
 
-                            <h3 style={{ marginBottom: 'var(--space-lg)' }}>Reported Issues</h3>
-                            <div className="grid grid-2" style={{ gap: 'var(--space-lg)' }}>
-                                {issues.length === 0 ? (
-                                    <div className="glass-card" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: 'var(--space-2xl)' }}>
-                                        <p style={{ color: 'var(--gray-500)', fontSize: 'var(--font-size-lg)' }}>No issues reported yet</p>
-                                    </div>
-                                ) : (
-                                    issues.map((issue, index) => (
+                                {/* Form/List Section */}
+                                <div>
+                                    {showIssueForm ? (
                                         <motion.div
-                                            key={index}
-                                            initial={{ opacity: 0, scale: 0.95 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            transition={{ delay: index * 0.05 }}
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
                                             className="glass-card"
                                         >
-                                            <div className="flex-between mb-md">
-                                                <h4 style={{ marginBottom: 0 }}>Issue #{issue.id}</h4>
-                                                <span className={`badge ${issue.status === 'COMPLETED' ? 'badge-success' : issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'}`}>
-                                                    {issue.status}
-                                                </span>
-                                            </div>
-                                            <p style={{ fontSize: 'var(--font-size-base)', lineHeight: '1.6' }}>{issue.description}</p>
-                                            {issue.location && (
-                                                <p style={{ fontSize: 'var(--font-size-sm)' }}>
-                                                    <strong>📍 Location:</strong> {issue.location}
-                                                </p>
-                                            )}
-                                            <small style={{ color: 'var(--gray-500)', fontSize: 'var(--font-size-xs)' }}>
-                                                {new Date(issue.timestamp).toLocaleString()}
-                                            </small>
+                                            <h3 style={{ marginBottom: 'var(--space-lg)' }}>
+                                                📝 Report Infrastructure Issue
+                                            </h3>
+                                            <form onSubmit={handleReportIssue}>
+                                                <div className="form-group">
+                                                    <label className="form-label">Latitude</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.000001"
+                                                        className="form-input"
+                                                        value={newIssue.latitude}
+                                                        readOnly
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div className="form-group">
+                                                    <label className="form-label">Longitude</label>
+                                                    <input
+                                                        type="number"
+                                                        step="0.000001"
+                                                        className="form-input"
+                                                        value={newIssue.longitude}
+                                                        readOnly
+                                                        required
+                                                    />
+                                                </div>
+
+                                                <div className="form-group">
+                                                    <label className="form-label">Issue Description (Required) *</label>
+                                                    <textarea
+                                                        className="form-textarea"
+                                                        value={newIssue.description}
+                                                        onChange={(e) => setNewIssue({ ...newIssue, description: e.target.value })}
+                                                        placeholder="Describe the infrastructure issue (e.g., Broken streetlight, Road damage, Water leak)"
+                                                        required
+                                                        rows="4"
+                                                    />
+                                                </div>
+
+                                                <div className="form-group">
+                                                    <label className="form-label">Location Name (Optional)</label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-input"
+                                                        value={newIssue.location}
+                                                        onChange={(e) => setNewIssue({ ...newIssue, location: e.target.value })}
+                                                        placeholder="e.g., MG Road junction, Near Park"
+                                                    />
+                                                </div>
+
+                                                <div className="flex" style={{ gap: 'var(--space-md)' }}>
+                                                    <button 
+                                                        type="submit" 
+                                                        className="btn btn-primary"
+                                                        style={{ flex: 1 }}
+                                                        disabled={!newIssue.description}
+                                                    >
+                                                        🚩 Report Issue
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowIssueForm(false);
+                                                            setSelectedLocation(null);
+                                                        }}
+                                                        className="btn btn-secondary"
+                                                    >
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </motion.div>
-                                    ))
-                                )}
+                                    ) : (
+                                        <motion.div
+                                            initial={{ opacity: 0, x: 20 }}
+                                            animate={{ opacity: 1, x: 0 }}
+                                            className="glass-card"
+                                            style={{ textAlign: 'center', padding: 'var(--space-2xl)' }}
+                                        >
+                                            <div style={{ fontSize: '4rem', marginBottom: 'var(--space-md)' }}>🗺️</div>
+                                            <h3>Click on the Map</h3>
+                                            <p style={{ color: 'var(--gray-600)' }}>
+                                                Click anywhere on the map to report an infrastructure issue
+                                            </p>
+                                        </motion.div>
+                                    )}
+
+                                    {/* Issues List */}
+                                    <motion.div
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: 0.2 }}
+                                        className="glass-card"
+                                        style={{ marginTop: 'var(--space-lg)' }}
+                                    >
+                                        <h3 style={{ marginBottom: 'var(--space-md)' }}>📋 My Reported Issues ({issues.length})</h3>
+                                        <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                                            {issues.length === 0 ? (
+                                                <p style={{ color: 'var(--gray-500)', textAlign: 'center', padding: 'var(--space-lg)' }}>
+                                                    No issues reported yet
+                                                </p>
+                                            ) : (
+                                                issues.map((issue, index) => (
+                                                    <div
+                                                        key={index}
+                                                        className="glass-card-dark"
+                                                        style={{
+                                                            marginBottom: 'var(--space-sm)',
+                                                            padding: 'var(--space-md)',
+                                                            borderLeft: `4px solid ${getStatusColor(issue.status)}`
+                                                        }}
+                                                    >
+                                                        <div className="flex-between mb-sm">
+                                                            <strong style={{ color: getStatusColor(issue.status) }}>
+                                                                Issue #{issue.id}
+                                                            </strong>
+                                                            <span className={`badge ${issue.status === 'COMPLETED' ? 'badge-success' : issue.status === 'ACCEPTED' ? 'badge-info' : 'badge-warning'}`}>
+                                                                {issue.status}
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ fontSize: 'var(--font-size-sm)', marginBottom: 'var(--space-xs)' }}>
+                                                            {issue.description}
+                                                        </p>
+                                                        {issue.location && (
+                                                            <p style={{ fontSize: 'var(--font-size-xs)', marginBottom: 'var(--space-xs)' }}>
+                                                                <strong>📍</strong> {issue.location}
+                                                            </p>
+                                                        )}
+                                                        {issue.assigned_to_name && (
+                                                            <p style={{ fontSize: 'var(--font-size-xs)', color: 'var(--gray-600)', marginBottom: 'var(--space-xs)' }}>
+                                                                👷 Assigned to: {issue.assigned_to_name}
+                                                            </p>
+                                                        )}
+                                                        <small style={{ color: 'var(--gray-500)', fontSize: 'var(--font-size-xs)' }}>
+                                                            {new Date(issue.timestamp).toLocaleString()}
+                                                        </small>
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                </div>
                             </div>
                         </motion.div>
                     )}

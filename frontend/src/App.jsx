@@ -17,23 +17,26 @@ import EmergencyContacts from './pages/women/EmergencyContacts';
 import FakeCall from './pages/women/FakeCall';
 
 // Police pages
-import PoliceDashboard from './pages/police/Dashboard';
+import PoliceDashboard from './pages/police/NewDashboard';
 import FlagZone from './pages/police/FlagZone';
 import PoliceConnect from './pages/police/Connect';
 import MarkZones from './pages/police/MarkZones';
 
 // Infrastructure pages
-import InfrastructureDashboard from './pages/infrastructure/Dashboard';
+import InfrastructureDashboard from './pages/infrastructure/NewDashboard';
 import InfrastructureChat from './pages/infrastructure/Chat';
+import InfrastructureIssuesMap from './pages/infrastructure/IssuesMap';
 
 // Cybersecurity pages
+import CybersecurityDashboard from './pages/cybersecurity/NewDashboard';
 import CybersecurityMonitoring from './pages/cybersecurity/Monitoring';
 
 // Emergency pages
-import EmergencyDashboard from './pages/emergency/Dashboard';
+import EmergencyDashboard from './pages/emergency/NewDashboard';
 import EmergencyChat from './pages/emergency/Chat';
 
 // Admin pages
+import AdminDashboard from './pages/admin/NewDashboard';
 import AdminApprovals from './pages/admin/Approvals';
 import AdminFlaggedUsers from './pages/admin/FlaggedUsers';
 
@@ -65,16 +68,19 @@ function App() {
                     {/* Infrastructure routes */}
                     <Route path="/infrastructure" element={<ProtectedRoute allowedRoles={['INFRASTRUCTURE']}><InfrastructureDashboard /></ProtectedRoute>} />
                     <Route path="/infrastructure/chat" element={<ProtectedRoute allowedRoles={['INFRASTRUCTURE']}><InfrastructureChat /></ProtectedRoute>} />
+                    <Route path="/infrastructure/issues-map" element={<ProtectedRoute allowedRoles={['INFRASTRUCTURE']}><InfrastructureIssuesMap /></ProtectedRoute>} />
 
                     {/* Cybersecurity routes */}
-                    <Route path="/cybersecurity" element={<ProtectedRoute allowedRoles={['CYBERSECURITY']}><CybersecurityMonitoring /></ProtectedRoute>} />
+                    <Route path="/cybersecurity" element={<ProtectedRoute allowedRoles={['CYBERSECURITY']}><CybersecurityDashboard /></ProtectedRoute>} />
+                    <Route path="/cybersecurity/monitoring" element={<ProtectedRoute allowedRoles={['CYBERSECURITY']}><CybersecurityMonitoring /></ProtectedRoute>} />
 
                     {/* Emergency routes */}
                     <Route path="/emergency" element={<ProtectedRoute allowedRoles={['EMERGENCY']}><EmergencyDashboard /></ProtectedRoute>} />
                     <Route path="/emergency/chat" element={<ProtectedRoute allowedRoles={['EMERGENCY']}><EmergencyChat /></ProtectedRoute>} />
 
                     {/* Admin routes */}
-                    <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminApprovals /></ProtectedRoute>} />
+                    <Route path="/admin" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminDashboard /></ProtectedRoute>} />
+                    <Route path="/admin/approvals" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminApprovals /></ProtectedRoute>} />
                     <Route path="/admin/flagged-users" element={<ProtectedRoute allowedRoles={['ADMIN']}><AdminFlaggedUsers /></ProtectedRoute>} />
                 </Routes>
             </BrowserRouter>

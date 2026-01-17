@@ -48,6 +48,7 @@ const InfrastructureDashboard = () => {
                     <div className="navbar-brand">SafeSpace Infrastructure</div>
                     <ul className="navbar-nav">
                         <li><Link to="/infrastructure" className="nav-link active">Dashboard</Link></li>
+                        <li><Link to="/infrastructure/issues-map" className="nav-link">Issues Map</Link></li>
                         <li><Link to="/infrastructure/chat" className="nav-link">Team Chat</Link></li>
                         <li><button onClick={logout} className="btn btn-sm btn-secondary">Logout</button></li>
                     </ul>

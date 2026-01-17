@@ -141,3 +141,100 @@ def get_all_users(current_user):
         'success': True,
         'users': [user.to_dict() for user in users]
     }), 200
+
+
+@admin_bp.route('/dashboard-stats', methods=['GET'])
+@token_required
+@role_required('ADMIN')
+def get_dashboard_stats(current_user):
+    """Get statistics for admin dashboard"""
+    from models import SOSEvent, FlaggedZone, Issue
+    from datetime import datetime, timedelta
+    
+    # User Statistics
+    total_users = User.query.count()
+    women_users = User.query.filter_by(role='WOMAN').count()
+    police_users = User.query.filter_by(role='POLICE', is_approved=True).count()
+    infra_users = User.query.filter_by(role='INFRASTRUCTURE', is_approved=True).count()
+    emergency_users = User.query.filter_by(role='EMERGENCY', is_approved=True).count()
+    cyber_users = User.query.filter_by(role='CYBERSECURITY', is_approved=True).count()
+    
+    pending_approvals = User.query.filter_by(is_approved=False).filter(
+        User.role.in_(['POLICE', 'INFRASTRUCTURE', 'CYBERSECURITY', 'EMERGENCY'])
+    ).count()
+    
+    suspended_users = User.query.filter_by(is_suspended=True).count()
+    
+    # Flagged Users
+    pending_flags = FlaggedUser.query.filter_by(status='PENDING').count()
+    total_flags = FlaggedUser.query.count()
+    
+    # System-wide Statistics
+    total_sos = SOSEvent.query.count()
+    active_sos = SOSEvent.query.filter_by(status='ACTIVE').count()
+    total_zones = FlaggedZone.query.filter_by(is_active=True).count()
+    total_issues = Issue.query.count()
+    pending_issues = Issue.query.filter_by(status='PENDING').count()
+    
+    # Recent activity (last 30 days)
+    month_ago = datetime.utcnow() - timedelta(days=30)
+    new_users_month = User.query.filter(User.created_at >= month_ago).count() if hasattr(User, 'created_at') else 0
+    
+    # User growth trend (last 7 days)
+    user_growth = []
+    for i in range(6, -1, -1):
+        day_start = datetime.utcnow().replace(hour=0, minute=0, second=0) - timedelta(days=i)
+        # Approximate - in production you'd have timestamps
+        user_growth.append({
+            'date': day_start.strftime('%a'),
+            'users': total_users  # Simplified - would track actual daily registrations
+        })
+    
+    # Role distribution
+    role_distribution = [
+        {'role': 'WOMEN', 'count': women_users},
+        {'role': 'POLICE', 'count': police_users},
+        {'role': 'INFRASTRUCTURE', 'count': infra_users},
+        {'role': 'EMERGENCY', 'count': emergency_users},
+        {'role': 'CYBERSECURITY', 'count': cyber_users}
+    ]
+    
+    # System health metrics
+    system_health = {
+        'active_sos': active_sos,
+        'pending_approvals': pending_approvals,
+        'pending_flags': pending_flags,
+        'pending_issues': pending_issues,
+        'status': 'healthy' if active_sos == 0 and pending_flags == 0 else 'attention_needed'
+    }
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'users': {
+                'total': total_users,
+                'women': women_users,
+                'police': police_users,
+                'infrastructure': infra_users,
+                'emergency': emergency_users,
+                'cybersecurity': cyber_users,
+                'pending_approvals': pending_approvals,
+                'suspended': suspended_users
+            },
+            'flags': {
+                'pending': pending_flags,
+                'total': total_flags
+            },
+            'system': {
+                'total_sos': total_sos,
+                'active_sos': active_sos,
+                'total_zones': total_zones,
+                'total_issues': total_issues,
+                'pending_issues': pending_issues
+            },
+            'trends': {
+                'role_distribution': role_distribution
+            },
+            'health': system_health
+        }
+    }), 200

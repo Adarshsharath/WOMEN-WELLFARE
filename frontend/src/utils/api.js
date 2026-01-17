@@ -132,6 +132,10 @@ export const policeAPI = {
     }),
 
     getIssues: () => apiRequest('/police/issues'),
+    
+    getAllIssues: () => apiRequest('/police/issues/all'),
+    
+    getDashboardStats: () => apiRequest('/police/dashboard-stats'),
 };
 
 // Infrastructure API
@@ -154,6 +158,8 @@ export const infrastructureAPI = {
         method: 'POST',
         body: JSON.stringify({ message }),
     }),
+    
+    getDashboardStats: () => apiRequest('/infrastructure/dashboard-stats'),
 };
 
 // Cybersecurity API
@@ -166,6 +172,8 @@ export const cybersecurityAPI = {
     }),
 
     getFlaggedUsers: () => apiRequest('/cybersecurity/flagged-users'),
+    
+    getDashboardStats: () => apiRequest('/cybersecurity/dashboard-stats'),
 };
 
 // Emergency API
@@ -178,6 +186,8 @@ export const emergencyAPI = {
     }),
 
     getBroadcastMessages: () => apiRequest('/emergency/broadcast'),
+    
+    getDashboardStats: () => apiRequest('/emergency/dashboard-stats'),
 };
 
 // Admin API
@@ -203,6 +213,8 @@ export const adminAPI = {
     }),
 
     getAllUsers: () => apiRequest('/admin/users'),
+    
+    getDashboardStats: () => apiRequest('/admin/dashboard-stats'),
 };
 
 // Chatbot API

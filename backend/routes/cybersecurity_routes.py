@@ -66,3 +66,76 @@ def get_flagged_users(current_user):
         'success': True,
         'flagged_users': [flag.to_dict() for flag in flagged_users]
     }), 200
+
+
+@cybersecurity_bp.route('/dashboard-stats', methods=['GET'])
+@token_required
+@role_required('CYBERSECURITY')
+def get_dashboard_stats(current_user):
+    """Get statistics for cybersecurity dashboard"""
+    from models import User, SOSEvent
+    from datetime import datetime, timedelta
+    
+    # Monitoring Statistics
+    total_monitored = AbuseMonitoring.query.count()
+    active_monitoring = User.query.filter_by(role='WOMAN', is_suspended=False).count()
+    
+    # Flagged Users
+    total_flags = FlaggedUser.query.count()
+    pending_flags = FlaggedUser.query.filter_by(status='PENDING').count()
+    reviewed_flags = FlaggedUser.query.filter_by(status='REVIEWED').count()
+    
+    # Suspended Users
+    suspended_users = User.query.filter_by(is_suspended=True).count()
+    
+    # Recent activity (last 7 days)
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    recent_flags = FlaggedUser.query.filter(FlaggedUser.timestamp >= week_ago).count()
+    
+    # Daily flagging trend (last 7 days)
+    daily_flags = []
+    for i in range(6, -1, -1):
+        day_start = datetime.utcnow().replace(hour=0, minute=0, second=0) - timedelta(days=i)
+        day_end = day_start + timedelta(days=1)
+        count = FlaggedUser.query.filter(
+            FlaggedUser.timestamp >= day_start,
+            FlaggedUser.timestamp < day_end
+        ).count()
+        daily_flags.append({
+            'date': day_start.strftime('%a'),
+            'flags': count
+        })
+    
+    # Status distribution
+    status_distribution = [
+        {'status': 'PENDING', 'count': pending_flags},
+        {'status': 'REVIEWED', 'count': reviewed_flags}
+    ]
+    
+    # System alerts
+    active_sos_count = SOSEvent.query.filter_by(status='ACTIVE').count()
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'monitoring': {
+                'total': total_monitored,
+                'active': active_monitoring,
+                'suspended': suspended_users
+            },
+            'flags': {
+                'total': total_flags,
+                'pending': pending_flags,
+                'reviewed': reviewed_flags,
+                'recent': recent_flags
+            },
+            'alerts': {
+                'active_sos': active_sos_count,
+                'pending_flags': pending_flags
+            },
+            'trends': {
+                'daily_flags': daily_flags,
+                'status_distribution': status_distribution
+            }
+        }
+    }), 200

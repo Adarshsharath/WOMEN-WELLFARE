@@ -191,16 +191,21 @@ def send_police_chat(current_user):
 @token_required
 @role_required('POLICE')
 def report_issue(current_user):
-    """Report issue to infrastructure"""
+    """Report issue to infrastructure with map coordinates"""
     data = request.get_json()
     
     if not data.get('description'):
         return jsonify({'error': 'Description required'}), 400
     
+    if not data.get('latitude') or not data.get('longitude'):
+        return jsonify({'error': 'Location coordinates required'}), 400
+    
     issue = Issue(
         reported_by_police_id=current_user.id,
         description=data['description'],
         location=data.get('location', ''),
+        latitude=data['latitude'],
+        longitude=data['longitude'],
         status='PENDING'
     )
     
@@ -209,7 +214,7 @@ def report_issue(current_user):
     
     return jsonify({
         'success': True,
-        'message': 'Issue reported',
+        'message': 'Issue reported to infrastructure',
         'issue': issue.to_dict()
     }), 201
 
@@ -226,4 +231,115 @@ def get_police_issues(current_user):
     return jsonify({
         'success': True,
         'issues': [issue.to_dict() for issue in issues]
+    }), 200
+
+
+@police_bp.route('/issues/all', methods=['GET'])
+@token_required
+@role_required('POLICE')
+def get_all_police_issues(current_user):
+    """Get all infrastructure issues from all police officers (for map view)"""
+    issues = Issue.query.order_by(Issue.timestamp.desc()).all()
+    
+    return jsonify({
+        'success': True,
+        'issues': [issue.to_dict() for issue in issues]
+    }), 200
+
+
+@police_bp.route('/dashboard-stats', methods=['GET'])
+@token_required
+@role_required('POLICE')
+def get_dashboard_stats(current_user):
+    """Get statistics for police dashboard"""
+    from sqlalchemy import func
+    from datetime import datetime, timedelta
+    
+    # SOS Statistics
+    total_sos = SOSEvent.query.count()
+    active_sos = SOSEvent.query.filter_by(status='ACTIVE').count()
+    resolved_sos = SOSEvent.query.filter_by(status='RESOLVED').count()
+    
+    # Flagged Zones Statistics
+    total_zones = FlaggedZone.query.count()
+    active_zones = FlaggedZone.query.filter_by(is_active=True).count()
+    critical_zones = FlaggedZone.query.filter_by(is_active=True, risk_level='CRITICAL').count()
+    high_zones = FlaggedZone.query.filter_by(is_active=True, risk_level='HIGH').count()
+    
+    # Infrastructure Issues Statistics
+    total_issues = Issue.query.count()
+    pending_issues = Issue.query.filter_by(status='PENDING').count()
+    accepted_issues = Issue.query.filter_by(status='ACCEPTED').count()
+    completed_issues = Issue.query.filter_by(status='COMPLETED').count()
+    
+    # Recent activity (last 7 days)
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    recent_sos = SOSEvent.query.filter(SOSEvent.timestamp >= week_ago).count()
+    recent_zones = FlaggedZone.query.filter(FlaggedZone.timestamp >= week_ago).count()
+    recent_issues = Issue.query.filter(Issue.timestamp >= week_ago).count()
+    
+    # Daily SOS trend (last 7 days)
+    daily_sos = []
+    for i in range(6, -1, -1):
+        day_start = datetime.utcnow().replace(hour=0, minute=0, second=0) - timedelta(days=i)
+        day_end = day_start + timedelta(days=1)
+        count = SOSEvent.query.filter(
+            SOSEvent.timestamp >= day_start,
+            SOSEvent.timestamp < day_end
+        ).count()
+        daily_sos.append({
+            'date': day_start.strftime('%a'),
+            'count': count
+        })
+    
+    # High risk zones by risk level
+    risk_distribution = []
+    for level in ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']:
+        count = FlaggedZone.query.filter_by(is_active=True, risk_level=level).count()
+        risk_distribution.append({
+            'level': level,
+            'count': count
+        })
+    
+    # Get high risk areas (active zones sorted by risk level)
+    high_risk_areas = FlaggedZone.query.filter_by(is_active=True).order_by(
+        db.case(
+            (FlaggedZone.risk_level == 'CRITICAL', 1),
+            (FlaggedZone.risk_level == 'HIGH', 2),
+            (FlaggedZone.risk_level == 'MEDIUM', 3),
+            (FlaggedZone.risk_level == 'LOW', 4),
+            else_=5
+        ),
+        FlaggedZone.timestamp.desc()
+    ).limit(10).all()
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'sos': {
+                'total': total_sos,
+                'active': active_sos,
+                'resolved': resolved_sos,
+                'recent': recent_sos
+            },
+            'zones': {
+                'total': total_zones,
+                'active': active_zones,
+                'critical': critical_zones,
+                'high': high_zones,
+                'recent': recent_zones
+            },
+            'issues': {
+                'total': total_issues,
+                'pending': pending_issues,
+                'accepted': accepted_issues,
+                'completed': completed_issues,
+                'recent': recent_issues
+            },
+            'trends': {
+                'daily_sos': daily_sos,
+                'risk_distribution': risk_distribution
+            },
+            'high_risk_areas': [zone.to_dict() for zone in high_risk_areas]
+        }
     }), 200

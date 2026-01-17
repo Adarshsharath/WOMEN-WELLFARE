@@ -95,6 +95,82 @@ def get_my_issues(current_user):
     }), 200
 
 
+@infrastructure_bp.route('/dashboard-stats', methods=['GET'])
+@token_required
+@role_required('INFRASTRUCTURE')
+def get_dashboard_stats(current_user):
+    """Get statistics for infrastructure dashboard"""
+    from datetime import datetime, timedelta
+    
+    # Overall Statistics
+    total_issues = Issue.query.count()
+    pending_issues = Issue.query.filter_by(status='PENDING').count()
+    accepted_issues = Issue.query.filter_by(status='ACCEPTED').count()
+    completed_issues = Issue.query.filter_by(status='COMPLETED').count()
+    
+    # My Statistics
+    my_total = Issue.query.filter_by(assigned_to_infra_id=current_user.id).count()
+    my_accepted = Issue.query.filter_by(assigned_to_infra_id=current_user.id, status='ACCEPTED').count()
+    my_completed = Issue.query.filter_by(assigned_to_infra_id=current_user.id, status='COMPLETED').count()
+    
+    # Recent activity (last 7 days)
+    week_ago = datetime.utcnow() - timedelta(days=7)
+    recent_issues = Issue.query.filter(Issue.timestamp >= week_ago).count()
+    recent_completed = Issue.query.filter(
+        Issue.completed_at >= week_ago
+    ).count() if Issue.query.filter(Issue.completed_at.isnot(None)).count() > 0 else 0
+    
+    # Daily completion trend (last 7 days)
+    daily_completions = []
+    for i in range(6, -1, -1):
+        day_start = datetime.utcnow().replace(hour=0, minute=0, second=0) - timedelta(days=i)
+        day_end = day_start + timedelta(days=1)
+        count = Issue.query.filter(
+            Issue.completed_at >= day_start,
+            Issue.completed_at < day_end
+        ).count()
+        daily_completions.append({
+            'date': day_start.strftime('%a'),
+            'completed': count
+        })
+    
+    # Issue status distribution
+    status_distribution = [
+        {'status': 'PENDING', 'count': pending_issues},
+        {'status': 'ACCEPTED', 'count': accepted_issues},
+        {'status': 'COMPLETED', 'count': completed_issues}
+    ]
+    
+    # Completion rate
+    completion_rate = round((completed_issues / total_issues * 100) if total_issues > 0 else 0, 1)
+    
+    return jsonify({
+        'success': True,
+        'stats': {
+            'overall': {
+                'total': total_issues,
+                'pending': pending_issues,
+                'accepted': accepted_issues,
+                'completed': completed_issues,
+                'completion_rate': completion_rate
+            },
+            'my_work': {
+                'total': my_total,
+                'accepted': my_accepted,
+                'completed': my_completed
+            },
+            'recent': {
+                'new_issues': recent_issues,
+                'completed': recent_completed
+            },
+            'trends': {
+                'daily_completions': daily_completions,
+                'status_distribution': status_distribution
+            }
+        }
+    }), 200
+
+
 @infrastructure_bp.route('/chat', methods=['GET'])
 @token_required
 @role_required('INFRASTRUCTURE')
