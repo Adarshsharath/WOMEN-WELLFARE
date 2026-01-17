@@ -64,7 +64,7 @@ const Login = () => {
                         >
                             🛡️ SafeSpace
                         </motion.h1>
-                        <p style={{ color: 'var(--gray-600)', fontSize: 'var(--font-size-base)' }}>
+                        <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-base)', fontWeight: '500' }}>
                             Welcome back! Sign in to continue.
                         </p>
                     </div>
@@ -132,7 +132,7 @@ const Login = () => {
                     </form>
 
                     <div style={{ marginTop: 'var(--space-2xl)', textAlign: 'center' }}>
-                        <p style={{ color: 'var(--gray-600)', marginBottom: 'var(--space-md)' }}>
+                        <p style={{ color: 'var(--gray-700)', marginBottom: 'var(--space-md)', fontWeight: '500' }}>
                             Don't have an account?
                         </p>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>

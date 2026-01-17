@@ -25,20 +25,69 @@ const SOSConfirmation = () => {
     };
 
     return (
-        <div className="page-wrapper">
-            <div className="page-content flex-center">
+        <div className="page-wrapper" style={{ background: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)' }}>
+            <div className="page-content flex-center" style={{ minHeight: '100vh' }}>
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
+                    initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="glass-card text-center"
-                    style={{ maxWidth: '500px', padding: 'var(--space-2xl)' }}
+                    style={{ 
+                        maxWidth: '600px', 
+                        padding: 'var(--space-3xl)',
+                        background: 'rgba(255, 255, 255, 0.98)',
+                        boxShadow: '0 20px 80px 0 rgba(220, 38, 38, 0.5)'
+                    }}
                 >
-                    <h1 style={{ fontSize: '6rem', color: 'var(--danger)', marginBottom: 'var(--space-lg)' }}>
+                    <motion.div
+                        animate={{ 
+                            scale: [1, 1.2, 1],
+                            rotate: [0, 10, -10, 0]
+                        }}
+                        transition={{ 
+                            duration: 1,
+                            repeat: Infinity,
+                            repeatType: "reverse"
+                        }}
+                        style={{ fontSize: '6rem', marginBottom: 'var(--space-md)' }}
+                    >
+                        🚨
+                    </motion.div>
+                    
+                    <motion.h1 
+                        animate={{ 
+                            scale: [1, 1.1, 1],
+                        }}
+                        transition={{ 
+                            duration: 1,
+                            repeat: Infinity,
+                        }}
+                        style={{ 
+                            fontSize: '8rem', 
+                            color: 'var(--danger)', 
+                            marginBottom: 'var(--space-md)',
+                            fontWeight: '900',
+                            textShadow: '0 4px 20px rgba(220, 38, 38, 0.5)'
+                        }}
+                    >
                         {countdown}
-                    </h1>
-                    <h2>SOS will be triggered in {countdown} seconds</h2>
-                    <p style={{ color: 'var(--gray-600)', marginTop: 'var(--space-md)' }}>
-                        Emergency alerts will be sent to all your contacts
+                    </motion.h1>
+                    
+                    <h2 style={{ 
+                        fontSize: 'var(--font-size-2xl)', 
+                        color: 'var(--danger)',
+                        marginBottom: 'var(--space-sm)',
+                        fontWeight: '700'
+                    }}>
+                        SOS Triggering in {countdown} {countdown === 1 ? 'second' : 'seconds'}
+                    </h2>
+                    
+                    <p style={{ 
+                        color: 'var(--gray-700)', 
+                        marginTop: 'var(--space-md)',
+                        fontSize: 'var(--font-size-lg)',
+                        fontWeight: '500'
+                    }}>
+                        ⚠️ Emergency alerts will be sent to all your contacts
                     </p>
 
                     <motion.button
@@ -48,12 +97,16 @@ const SOSConfirmation = () => {
                         className="btn btn-lg"
                         style={{
                             marginTop: 'var(--space-2xl)',
-                            background: 'var(--gray-700)',
+                            background: 'linear-gradient(135deg, var(--gray-700) 0%, var(--gray-900) 100%)',
                             color: 'white',
-                            width: '100%'
+                            width: '100%',
+                            fontSize: 'var(--font-size-xl)',
+                            fontWeight: '800',
+                            padding: 'var(--space-xl)',
+                            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.3)'
                         }}
                     >
-                        CANCEL SOS
+                        ❌ CANCEL SOS
                     </motion.button>
                 </motion.div>
             </div>
