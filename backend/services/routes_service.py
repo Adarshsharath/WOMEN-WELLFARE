@@ -495,8 +495,11 @@ def calculate_safe_routes(start_lat, start_lon, end_lat, end_lon, flagged_zones=
                 for leg in r['route']['legs']:
                     if 'steps' in leg:
                         for step in leg['steps']:
-                            base_instruction = step.get('maneuver', {}).get('instruction', 'Continue')
-                            location = step.get('maneuver', {}).get('location', [])
+                            maneuver = step.get('maneuver', {})
+                            base_instruction = maneuver.get('instruction', 'Continue straight')
+                            maneuver_type = maneuver.get('type', 'turn')
+                            modifier = maneuver.get('modifier', '')
+                            location = maneuver.get('location', [])
                             distance = step.get('distance', 0)
                             
                             # Format distance for instruction
@@ -505,27 +508,42 @@ def calculate_safe_routes(start_lat, start_lon, end_lat, end_lon, flagged_zones=
                             else:
                                 dist_str = f"{int(distance)} m"
                             
-                            # Enhance instruction with distance
-                            enhanced_instruction = base_instruction
-                            
-                            # Add distance to the instruction
-                            if 'Continue' in base_instruction:
-                                enhanced_instruction = base_instruction.replace('Continue', f'Continue for {dist_str}')
-                            elif 'Head' in base_instruction:
-                                enhanced_instruction = f"{base_instruction} for {dist_str}"
+                            # Build enhanced instruction based on maneuver type
+                            if maneuver_type == 'turn':
+                                # Turn instructions: "Turn right for 500m"
+                                direction = modifier.replace('-', ' ').title() if modifier else "right"
+                                enhanced_instruction = f"Turn {direction} for {dist_str}"
+                            elif maneuver_type == 'new name' or maneuver_type == 'continue':
+                                # Continue on road
+                                enhanced_instruction = f"Continue straight for {dist_str}"
+                                if modifier:
+                                    enhanced_instruction = f"Continue {modifier} for {dist_str}"
+                            elif maneuver_type == 'depart':
+                                # Starting point
+                                enhanced_instruction = f"Head {modifier if modifier else 'forward'} for {dist_str}"
+                            elif maneuver_type == 'arrive':
+                                # Destination
+                                enhanced_instruction = f"Arrive at destination"
+                            elif maneuver_type in ['roundabout', 'rotary']:
+                                # Roundabout
+                                exit_num = maneuver.get('exit', 1)
+                                enhanced_instruction = f"At roundabout, take exit {exit_num} for {dist_str}"
+                            elif maneuver_type == 'merge':
+                                enhanced_instruction = f"Merge {modifier if modifier else 'onto road'} for {dist_str}"
                             else:
-                                # For turns, add "then continue"
-                                enhanced_instruction = f"{base_instruction}, then continue for {dist_str}"
+                                # Fallback: use base instruction
+                                if 'for' not in base_instruction.lower():
+                                    enhanced_instruction = f"{base_instruction} for {dist_str}"
+                                else:
+                                    enhanced_instruction = base_instruction
                             
                             # Try to enhance with nearby landmark
                             if location and len(location) == 2:
                                 landmark = get_nearby_landmark(location[1], location[0])
                                 if landmark:
                                     # Add landmark to instruction
-                                    if 'Continue' in base_instruction or 'Head' in base_instruction:
+                                    if maneuver_type != 'arrive':
                                         enhanced_instruction = f"{enhanced_instruction} towards {landmark}"
-                                    else:
-                                        enhanced_instruction = f"{enhanced_instruction} near {landmark}"
                             
                             steps.append({
                                 'instruction': enhanced_instruction,
