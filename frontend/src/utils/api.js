@@ -9,8 +9,10 @@ const getAuthHeader = () => {
 
 // Generic API request function
 const apiRequest = async (url, options = {}) => {
+    const isFormData = options.body instanceof FormData;
+
     const headers = {
-        'Content-Type': 'application/json',
+        ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
         ...getAuthHeader(),
         ...options.headers,
     };
@@ -36,9 +38,10 @@ const apiRequest = async (url, options = {}) => {
 
 // Authentication API
 export const authAPI = {
-    registerWoman: (data) => apiRequest('/auth/register/woman', {
+    registerWoman: (formData) => apiRequest('/auth/register/woman', {
         method: 'POST',
-        body: JSON.stringify(data),
+        // For FormData, Fetch automatically sets the correct Content-Type with boundary
+        body: formData,
     }),
 
     registerCommunity: (data) => apiRequest('/auth/register/community', {
@@ -132,9 +135,9 @@ export const policeAPI = {
     }),
 
     getIssues: () => apiRequest('/police/issues'),
-    
+
     getAllIssues: () => apiRequest('/police/issues/all'),
-    
+
     getDashboardStats: () => apiRequest('/police/dashboard-stats'),
 };
 
@@ -158,7 +161,7 @@ export const infrastructureAPI = {
         method: 'POST',
         body: JSON.stringify({ message }),
     }),
-    
+
     getDashboardStats: () => apiRequest('/infrastructure/dashboard-stats'),
 };
 
@@ -172,7 +175,7 @@ export const cybersecurityAPI = {
     }),
 
     getFlaggedUsers: () => apiRequest('/cybersecurity/flagged-users'),
-    
+
     getDashboardStats: () => apiRequest('/cybersecurity/dashboard-stats'),
 };
 
@@ -186,7 +189,7 @@ export const emergencyAPI = {
     }),
 
     getBroadcastMessages: () => apiRequest('/emergency/broadcast'),
-    
+
     getDashboardStats: () => apiRequest('/emergency/dashboard-stats'),
 };
 
@@ -213,7 +216,7 @@ export const adminAPI = {
     }),
 
     getAllUsers: () => apiRequest('/admin/users'),
-    
+
     getDashboardStats: () => apiRequest('/admin/dashboard-stats'),
 };
 

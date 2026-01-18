@@ -44,9 +44,26 @@ app.register_blueprint(create_sse_blueprint(), url_prefix='/api/sse')
 # Authentication routes
 @app.route('/api/auth/register/woman', methods=['POST'])
 def register_woman_route():
-    """Register a woman user"""
-    data = request.get_json()
-    result, status_code = register_woman(data)
+    """Register a woman user with document verification"""
+    # Check if request is multipart
+    if 'document' not in request.files:
+        return jsonify({'error': 'No document uploaded'}), 400
+    
+    document_file = request.files['document']
+    doc_type = request.form.get('docType') # e.g., 'AADHAR' or 'PASSPORT'
+    
+    if not doc_type:
+        return jsonify({'error': 'Document type not specified'}), 400
+
+    # Extract user data from form fields
+    data = {
+        'name': request.form.get('name'),
+        'phone': request.form.get('phone'),
+        'email': request.form.get('email'),
+        'password': request.form.get('password')
+    }
+    
+    result, status_code = register_woman(data, document_file, doc_type)
     return jsonify(result), status_code
 
 

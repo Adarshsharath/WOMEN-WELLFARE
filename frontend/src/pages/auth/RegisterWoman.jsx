@@ -10,8 +10,10 @@ const RegisterWoman = () => {
         email: '',
         phone: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        docType: 'AADHAR'
     });
+    const [document, setDocument] = useState(null);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { login } = useAuth();
@@ -19,6 +21,10 @@ const RegisterWoman = () => {
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleFileChange = (e) => {
+        setDocument(e.target.files[0]);
     };
 
     const handleSubmit = async (e) => {
@@ -30,15 +36,27 @@ const RegisterWoman = () => {
             return;
         }
 
+        if (!document) {
+            setError('Please upload a document for verification');
+            return;
+        }
+
         setLoading(true);
 
         try {
-            const { confirmPassword, ...data } = formData;
+            const data = new FormData();
+            data.append('name', formData.name);
+            data.append('email', formData.email);
+            data.append('phone', formData.phone);
+            data.append('password', formData.password);
+            data.append('docType', formData.docType);
+            data.append('document', document);
+
             const response = await authAPI.registerWoman(data);
             login(response.user, response.token);
             navigate('/woman');
         } catch (err) {
-            setError(err.message || 'Registration failed');
+            setError(err.message || 'Registration failed. Please ensure the document is clear and shows female gender.');
         } finally {
             setLoading(false);
         }
@@ -55,13 +73,13 @@ const RegisterWoman = () => {
                     style={{ maxWidth: '520px', width: '100%', padding: 'var(--space-2xl)' }}
                 >
                     <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            style={{ 
-                                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', 
-                                WebkitBackgroundClip: 'text', 
+                            style={{
+                                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                                WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 fontSize: 'var(--font-size-4xl)',
                                 fontWeight: 'bold',
@@ -76,14 +94,14 @@ const RegisterWoman = () => {
                     </div>
 
                     {error && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            style={{ 
-                                padding: 'var(--space-md)', 
-                                background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)', 
-                                color: 'white', 
-                                borderRadius: 'var(--radius-lg)', 
+                            style={{
+                                padding: 'var(--space-md)',
+                                background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)',
+                                color: 'white',
+                                borderRadius: 'var(--radius-lg)',
                                 marginBottom: 'var(--space-lg)',
                                 boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
                             }}
@@ -140,6 +158,40 @@ const RegisterWoman = () => {
 
                         <div className="form-group">
                             <label className="form-label" style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>
+                                📄 Verification Document Type
+                            </label>
+                            <select
+                                name="docType"
+                                className="form-input"
+                                value={formData.docType}
+                                onChange={handleChange}
+                                style={{ appearance: 'none' }}
+                                required
+                            >
+                                <option value="AADHAR">Aadhar Card (Indian)</option>
+                                <option value="PASSPORT">Passport (NRI/Foreign)</option>
+                            </select>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>
+                                📤 Upload Document (Photo/Scan)
+                            </label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="form-input"
+                                onChange={handleFileChange}
+                                required
+                                style={{ padding: 'var(--space-sm)' }}
+                            />
+                            <p style={{ fontSize: '11px', color: 'var(--gray-500)', marginTop: '4px' }}>
+                                * Must clearly show gender as 'Female' for verification.
+                            </p>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="form-label" style={{ fontSize: 'var(--font-size-sm)', fontWeight: '600' }}>
                                 🔒 Password
                             </label>
                             <input
@@ -168,12 +220,12 @@ const RegisterWoman = () => {
                             />
                         </div>
 
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary" 
-                            disabled={loading} 
-                            style={{ 
-                                width: '100%', 
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={loading}
+                            style={{
+                                width: '100%',
                                 padding: 'var(--space-lg)',
                                 fontSize: 'var(--font-size-lg)',
                                 fontWeight: '600',

@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 from flask import request, jsonify
 from models import User, db
+from services.ocr_service import verify_document
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -99,8 +100,8 @@ def validate_secret_code(role, code):
     return SECRET_CODES.get(role) == code
 
 
-def register_woman(data):
-    """Register a woman user (direct approval)"""
+def register_woman(data, document_file=None, doc_type=None):
+    """Register a woman user with document verification"""
     try:
         # Validate required fields
         required_fields = ['name', 'phone', 'email', 'password']
@@ -108,6 +109,15 @@ def register_woman(data):
             if field not in data:
                 return {'error': f'Missing required field: {field}'}, 400
         
+        # Document verification is required
+        if not document_file or not doc_type:
+            return {'error': 'Document upload is required for verification'}, 400
+
+        # Perform OCR Verification
+        image_bytes = document_file.read()
+        if not verify_document(image_bytes, doc_type):
+            return {'error': 'Document verification failed. Only female users can register.'}, 400
+
         # Check if email or phone already exists
         if User.query.filter_by(email=data['email']).first():
             return {'error': 'Email already registered'}, 400
@@ -121,7 +131,7 @@ def register_woman(data):
             phone=data['phone'],
             email=data['email'],
             role='WOMAN',
-            is_approved=True  # Women are auto-approved
+            is_approved=True  # Women are approved after OCR success
         )
         new_user.set_password(data['password'])
         
