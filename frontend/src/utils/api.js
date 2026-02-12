@@ -99,6 +99,24 @@ export const womenAPI = {
     }),
 
     getFlaggedZones: () => apiRequest('/police/flagged-zones'),
+
+    // Ride Safety Timer
+    startRideTimer: (data) => apiRequest('/women/ride-timer', {
+        method: 'POST',
+        body: JSON.stringify(data),
+    }),
+
+    getActiveRideTimer: () => apiRequest('/women/ride-timer/active'),
+
+    checkInRideTimer: (id) => apiRequest(`/women/ride-timer/${id}/check-in`, {
+        method: 'POST',
+    }),
+
+    cancelRideTimer: (id) => apiRequest(`/women/ride-timer/${id}/cancel`, {
+        method: 'PUT',
+    }),
+
+    getRideTimerHistory: () => apiRequest('/women/ride-timer/history'),
 };
 
 // Police API

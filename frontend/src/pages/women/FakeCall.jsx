@@ -275,6 +275,16 @@ const FakeCall = () => {
 
     return (
         <div className="page-wrapper">
+            {/* Navigation */}
+            <nav className="navbar">
+                <div className="navbar-container container">
+                    <div className="navbar-brand">📞 Fake Call</div>
+                    <ul className="navbar-nav">
+                        <li><Link to="/woman" className="nav-link">← Back to Home</Link></li>
+                    </ul>
+                </div>
+            </nav>
+
             <div className="page-content container">
                 <div className="flex-between mb-lg">
                     <h1>Fake Call Settings</h1>

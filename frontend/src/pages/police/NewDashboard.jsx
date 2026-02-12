@@ -51,7 +51,7 @@ const PoliceDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">SafeSpace Police</div>
+                        <div className="navbar-brand">Her-Assist Police</div>
                         <ul className="navbar-nav">
                             <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -71,7 +71,7 @@ const PoliceDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Police</div>
+                    <div className="navbar-brand">Her-Assist Police</div>
                     <ul className="navbar-nav">
                         <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -85,7 +85,7 @@ const PoliceDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            <span>🚔</span> Police Command Center
+                            <span>🚔</span> Police Dashboard | Her-Assist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)', fontWeight: '500' }}>
                             Real-time monitoring and analytics dashboard

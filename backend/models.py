@@ -237,6 +237,47 @@ class ChatMessage(db.Model):
         }
 
 
+class RideSafetyTimer(db.Model):
+    """Safety timer for women during rides"""
+    __tablename__ = 'ride_safety_timers'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    woman_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    duration_minutes = db.Column(db.Integer, nullable=False)  # Timer duration in minutes
+    start_latitude = db.Column(db.Float)
+    start_longitude = db.Column(db.Float)
+    destination_name = db.Column(db.String(255))
+    ride_type = db.Column(db.String(50))  # e.g., "taxi", "uber", "auto", "bus", etc.
+    vehicle_number = db.Column(db.String(50))
+    driver_name = db.Column(db.String(100))
+    status = db.Column(db.String(20), default='ACTIVE')  # ACTIVE, CHECKED_IN, EXPIRED, CANCELLED
+    started_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    checked_in_at = db.Column(db.DateTime)
+    last_check_at = db.Column(db.DateTime)  # For periodic checks
+    
+    woman = db.relationship('User', backref='ride_timers', foreign_keys=[woman_id])
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'woman_id': self.woman_id,
+            'woman_name': self.woman.name,
+            'duration_minutes': self.duration_minutes,
+            'start_latitude': self.start_latitude,
+            'start_longitude': self.start_longitude,
+            'destination_name': self.destination_name,
+            'ride_type': self.ride_type,
+            'vehicle_number': self.vehicle_number,
+            'driver_name': self.driver_name,
+            'status': self.status,
+            'started_at': self.started_at.isoformat(),
+            'expires_at': self.expires_at.isoformat(),
+            'checked_in_at': self.checked_in_at.isoformat() if self.checked_in_at else None,
+            'last_check_at': self.last_check_at.isoformat() if self.last_check_at else None
+        }
+
+
 class FlaggedUser(db.Model):
     """Users flagged by cybersecurity for admin review"""
     __tablename__ = 'flagged_users'

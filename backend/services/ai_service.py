@@ -25,7 +25,7 @@ def chat_with_gemini(message, conversation_history=None):
             }
         
         # System prompt for emotional support
-        system_prompt = """You are a compassionate AI assistant for SafeSpace, a women's safety platform. 
+        system_prompt = """You are a compassionate AI assistant for Her-Assist, a women's safety platform. 🛡️
         Your role is to provide emotional support to women who may be in distress or feeling unsafe.
         
         Guidelines:

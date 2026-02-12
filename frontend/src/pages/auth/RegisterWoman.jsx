@@ -89,7 +89,7 @@ const RegisterWoman = () => {
                             👩 Register as Woman
                         </motion.h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-base)', fontWeight: '500' }}>
-                            Create your SafeSpace account
+                            Create your Her-Assist account
                         </p>
                     </div>
 

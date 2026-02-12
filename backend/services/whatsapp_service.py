@@ -49,7 +49,7 @@ def send_emergency_whatsapp(phone_number, woman_name, latitude, longitude, batte
         return False
 
 
-def send_bulk_emergency_whatsapp(contacts, woman_name, latitude, longitude, battery):
+def send_bulk_emergency_whatsapp(contacts, woman_name, latitude, longitude, battery, custom_message=None):
     """Send emergency WhatsApp messages to multiple contacts"""
     results = []
     for contact in contacts:

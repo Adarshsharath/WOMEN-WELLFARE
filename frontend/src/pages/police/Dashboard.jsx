@@ -41,7 +41,7 @@ const PoliceDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Police</div>
+                    <div className="navbar-brand">Her-Assist Police</div>
                     <ul className="navbar-nav">
                         <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -68,10 +68,10 @@ const PoliceDashboard = () => {
                 ) : (
                     <div style={{ marginTop: 'var(--space-xl)' }}>
                         {sosEvents.length === 0 ? (
-                            <motion.div 
+                            <motion.div
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="glass-card text-center" 
+                                className="glass-card text-center"
                                 style={{ padding: 'var(--space-2xl)' }}
                             >
                                 <div style={{ fontSize: '4rem', marginBottom: 'var(--space-lg)' }}>✅</div>
@@ -89,7 +89,7 @@ const PoliceDashboard = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: index * 0.1 }}
                                         className="glass-card"
-                                        style={{ 
+                                        style={{
                                             borderLeft: sos.status === 'ACTIVE' ? '4px solid var(--danger)' : '4px solid var(--gray-300)',
                                             background: sos.status === 'ACTIVE' ? 'rgba(239, 68, 68, 0.05)' : 'rgba(255, 255, 255, 0.95)'
                                         }}

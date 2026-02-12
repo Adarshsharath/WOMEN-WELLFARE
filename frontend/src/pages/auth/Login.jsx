@@ -49,20 +49,20 @@ const Login = () => {
                     style={{ maxWidth: '480px', width: '100%', padding: 'var(--space-2xl)' }}
                 >
                     <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
-                        <motion.h1 
+                        <motion.h1
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.2 }}
-                            style={{ 
-                                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)', 
-                                WebkitBackgroundClip: 'text', 
+                            style={{
+                                background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%)',
+                                WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 fontSize: 'var(--font-size-4xl)',
                                 fontWeight: 'bold',
                                 marginBottom: 'var(--space-sm)'
                             }}
                         >
-                            🛡️ SafeSpace
+                            🛡️ Her-Assist
                         </motion.h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-base)', fontWeight: '500' }}>
                             Welcome back! Sign in to continue.
@@ -70,14 +70,14 @@ const Login = () => {
                     </div>
 
                     {error && (
-                        <motion.div 
+                        <motion.div
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
-                            style={{ 
-                                padding: 'var(--space-md)', 
-                                background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)', 
-                                color: 'white', 
-                                borderRadius: 'var(--radius-lg)', 
+                            style={{
+                                padding: 'var(--space-md)',
+                                background: 'linear-gradient(135deg, var(--danger) 0%, var(--danger-light) 100%)',
+                                color: 'white',
+                                borderRadius: 'var(--radius-lg)',
                                 marginBottom: 'var(--space-lg)',
                                 boxShadow: '0 4px 15px rgba(239, 68, 68, 0.3)'
                             }}
@@ -115,12 +115,12 @@ const Login = () => {
                             />
                         </div>
 
-                        <button 
-                            type="submit" 
-                            className="btn btn-primary" 
-                            disabled={loading} 
-                            style={{ 
-                                width: '100%', 
+                        <button
+                            type="submit"
+                            className="btn btn-primary"
+                            disabled={loading}
+                            style={{
+                                width: '100%',
                                 padding: 'var(--space-lg)',
                                 fontSize: 'var(--font-size-lg)',
                                 fontWeight: '600',

@@ -11,7 +11,7 @@ load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key-change-this')
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///safespace.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///her-assist.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize CORS
@@ -92,7 +92,7 @@ def serve_audio(filename):
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint"""
-    return jsonify({'status': 'healthy', 'message': 'SafeSpace API is running'}), 200
+    return jsonify({'status': 'healthy', 'message': 'Her-Assist API is running'}), 200
 
 
 # Create database tables and default admin
@@ -101,21 +101,30 @@ def init_database():
     with app.app_context():
         db.create_all()
         
-        # Create default admin if doesn't exist
-        admin = User.query.filter_by(email='admin@safespace.com').first()
+        # Create default admin if doesn't exist or update existing one's email
+        admin = User.query.filter_by(phone='0000000000').first()
         if not admin:
             admin = User(
                 name='Admin',
                 phone='0000000000',
-                email='admin@safespace.com',
+                email='admin@her-assist.com',
                 role='ADMIN',
                 is_approved=True,
                 is_suspended=False
             )
-            admin.set_password('admin123')  # Change in production
+            admin.set_password('admin123')
             db.session.add(admin)
-            db.session.commit()
-            print("Default admin created: admin@safespace.com / admin123")
+            print("Creating new default admin...")
+        else:
+            # Update existing admin to new branded email if needed
+            if admin.email != 'admin@her-assist.com':
+                print(f"Updating admin email from {admin.email} to admin@her-assist.com")
+                admin.email = 'admin@her-assist.com'
+            admin.role = 'ADMIN'
+            admin.is_approved = True
+        
+        db.session.commit()
+        print(f"Admin account verified: {admin.email}")
         
         print("Database initialized successfully")
 

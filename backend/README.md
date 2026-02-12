@@ -1,6 +1,6 @@
-# SafeSpace Backend
+# Her-Assist Backend
 
-Python Flask backend for the SafeSpace women's safety platform.
+Python Flask backend for the Her-Assist women's safety platform.
 
 ## Setup
 
@@ -30,7 +30,7 @@ The server will start on http://localhost:5000
 
 ## Default Admin Credentials
 
-- **Email**: admin@safespace.com
+- **Email**: admin@her-assist.com
 - **Password**: admin123
 
 **⚠️ Change these credentials in production!**

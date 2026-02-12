@@ -48,7 +48,7 @@ const EmergencyDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">SafeSpace Emergency</div>
+                        <div className="navbar-brand">Her-Assist Emergency</div>
                         <ul className="navbar-nav">
                             <li><Link to="/emergency" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/emergency/chat" className="nav-link">Chat</Link></li>
@@ -67,7 +67,7 @@ const EmergencyDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Emergency</div>
+                    <div className="navbar-brand">Her-Assist Emergency</div>
                     <ul className="navbar-nav">
                         <li><Link to="/emergency" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/emergency/chat" className="nav-link">Chat</Link></li>
@@ -80,7 +80,7 @@ const EmergencyDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            🚨 Emergency Response Center
+                            🚨 Emergency Dashboard | Her-Assist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
                             Real-time emergency monitoring and coordination

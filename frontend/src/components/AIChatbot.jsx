@@ -205,7 +205,7 @@ const AIChatbot = () => {
         setIsCalling(true);
         setIsMicActive(true);
         setCallStatus('In Call');
-        const greet = "Hello, I am your SafeSpace assistant. Are you feeling safe?";
+        const greet = "Hello, I am your Her-Assist assistant. Are you feeling safe?";
         setMessages(prev => [...prev, { role: 'assistant', content: greet }]);
         speak(greet);
     };
@@ -240,7 +240,7 @@ const AIChatbot = () => {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                                 <div style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 10px #10B981' }}></div>
-                                <span style={{ fontWeight: '700', letterSpacing: '0.5px' }}>AI Safety Guardian</span>
+                                <span style={{ fontWeight: '700', letterSpacing: '0.5px' }}>Her-Assist Guardian</span>
                             </div>
                             <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
                                 <button onClick={startCall} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', cursor: 'pointer', padding: '5px 10px', borderRadius: '5px' }}>📞 Call</button>

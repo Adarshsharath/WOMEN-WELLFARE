@@ -19,7 +19,7 @@ def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
         print(f"DEBUG: Attempting SMS with key starting with: {FAST2SMS_API_KEY[:4]}...")
         
         message = (
-            f"🚨 SAFE SPACE EMERGENCY 🚨\n"
+            f"🚨 HER-ASSIST EMERGENCY 🚨\n"
             f"User: {woman_name}\n"
             f"Status: SOS TRIGGERED\n"
             f"Location: https://maps.google.com/?q={latitude},{longitude}\n"
@@ -55,7 +55,7 @@ def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
         return False
 
 
-def send_bulk_emergency_sms(contacts, woman_name, latitude, longitude, battery):
+def send_bulk_emergency_sms(contacts, woman_name, latitude, longitude, battery, custom_message=None):
     """Send emergency SMS to multiple contacts"""
     results = []
     for contact in contacts:

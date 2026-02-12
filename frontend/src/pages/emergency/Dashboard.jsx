@@ -34,7 +34,7 @@ const EmergencyDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Emergency</div>
+                    <div className="navbar-brand">Her-Assist Emergency</div>
                     <ul className="navbar-nav">
                         <li><Link to="/emergency" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/emergency/chat" className="nav-link">Broadcast</Link></li>

@@ -15,6 +15,9 @@ import SOSActive from './pages/women/SOSActive';
 import SafeRoutes from './pages/women/SafeRoutes';
 import EmergencyContacts from './pages/women/EmergencyContacts';
 import FakeCall from './pages/women/FakeCall';
+import RideSafety from './pages/women/RideSafety';
+import HelplineNumbers from './pages/women/HelplineNumbers';
+import SafetyTips from './pages/women/SafetyTips';
 
 // Police pages
 import PoliceDashboard from './pages/police/NewDashboard';
@@ -58,6 +61,9 @@ function App() {
                     <Route path="/woman/safe-routes" element={<ProtectedRoute allowedRoles={['WOMAN']}><SafeRoutes /></ProtectedRoute>} />
                     <Route path="/woman/emergency-contacts" element={<ProtectedRoute allowedRoles={['WOMAN']}><EmergencyContacts /></ProtectedRoute>} />
                     <Route path="/woman/fake-call" element={<ProtectedRoute allowedRoles={['WOMAN']}><FakeCall /></ProtectedRoute>} />
+                    <Route path="/woman/ride-safety" element={<ProtectedRoute allowedRoles={['WOMAN']}><RideSafety /></ProtectedRoute>} />
+                    <Route path="/woman/helplines" element={<ProtectedRoute allowedRoles={['WOMAN']}><HelplineNumbers /></ProtectedRoute>} />
+                    <Route path="/woman/safety-tips" element={<ProtectedRoute allowedRoles={['WOMAN']}><SafetyTips /></ProtectedRoute>} />
 
                     {/* Police routes */}
                     <Route path="/police" element={<ProtectedRoute allowedRoles={['POLICE']}><PoliceDashboard /></ProtectedRoute>} />

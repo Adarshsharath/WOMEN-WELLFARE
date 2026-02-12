@@ -45,7 +45,7 @@ const InfrastructureDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Infrastructure</div>
+                    <div className="navbar-brand">Her-Assist Infrastructure</div>
                     <ul className="navbar-nav">
                         <li><Link to="/infrastructure" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/infrastructure/issues-map" className="nav-link">Issues Map</Link></li>

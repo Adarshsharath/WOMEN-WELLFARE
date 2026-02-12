@@ -1,4 +1,4 @@
-# SafeSpace - Women's Safety Platform
+# Her-Assist - Women's Safety Platform
 
 A comprehensive women's safety platform with real-time emergency response, community coordination, and AI support.
 
@@ -68,7 +68,7 @@ The frontend will run on `http://localhost:3000`
 ## Default Credentials
 
 **Admin Account:**
-- Email: `admin@safespace.com`
+- Email: `admin@her-assist.com`
 - Password: `admin123`
 
 **⚠️ IMPORTANT:** Change these credentials in production!
@@ -91,7 +91,7 @@ You need to configure the following API keys in `backend/.env`:
 ## Project Structure
 
 ```
-safespace/
+her-assist/
 ├── backend/
 │   ├── app.py                 # Main Flask application
 │   ├── models.py              # Database models

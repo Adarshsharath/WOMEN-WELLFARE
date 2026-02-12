@@ -45,7 +45,7 @@ const InfrastructureDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">SafeSpace Infrastructure</div>
+                        <div className="navbar-brand">Her-Assist Infrastructure</div>
                         <ul className="navbar-nav">
                             <li><Link to="/infrastructure" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/infrastructure/issues-map" className="nav-link">Issues Map</Link></li>
@@ -65,7 +65,7 @@ const InfrastructureDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">SafeSpace Infrastructure</div>
+                    <div className="navbar-brand">Her-Assist Infrastructure</div>
                     <ul className="navbar-nav">
                         <li><Link to="/infrastructure" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/infrastructure/issues-map" className="nav-link">Issues Map</Link></li>
@@ -79,7 +79,7 @@ const InfrastructureDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            🏗️ Infrastructure Control Center
+                            🏗️ Infrastructure Dashboard | Her-Assist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
                             Track, manage, and complete infrastructure maintenance tasks
