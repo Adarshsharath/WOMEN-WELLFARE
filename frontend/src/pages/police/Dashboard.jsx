@@ -7,6 +7,7 @@ import { policeAPI, subscribeToSOSUpdates } from '../../utils/api';
 const PoliceDashboard = () => {
     const { user, logout } = useAuth();
     const [sosEvents, setSOSEvents] = useState([]);
+    const [rideSosEvents, setRideSosEvents] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -28,8 +29,12 @@ const PoliceDashboard = () => {
 
     const loadSOSFeed = async () => {
         try {
-            const data = await policeAPI.getSOSFeed();
-            setSOSEvents(data.sos_events || []);
+            const [sosData, rideSosData] = await Promise.all([
+                policeAPI.getSOSFeed(),
+                policeAPI.getRideSafetySOS()
+            ]);
+            setSOSEvents(sosData.sos_events || []);
+            setRideSosEvents(rideSosData.rides || []);
         } catch (error) {
             console.error('Failed to load SOS feed:', error);
         } finally {
@@ -41,7 +46,7 @@ const PoliceDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Police</div>
+                    <div className="navbar-brand">HerAssist Police</div>
                     <ul className="navbar-nav">
                         <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -122,6 +127,49 @@ const PoliceDashboard = () => {
                                         >
                                             📍 View Location
                                         </a>
+                                    </motion.div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* Ride Safety SOS Section */}
+                {!loading && (
+                    <div style={{ marginTop: 'var(--space-2xl)' }}>
+                        <h3 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', color: 'var(--primary)' }}>
+                            🚗 Ride Safety SOS Alerts
+                        </h3>
+
+                        {rideSosEvents.length === 0 ? (
+                            <div className="glass-card text-center" style={{ padding: 'var(--space-xl)', color: 'var(--gray-500)' }}>
+                                <p>No ride safety SOS alerts at the moment.</p>
+                            </div>
+                        ) : (
+                            <div className="grid grid-2">
+                                {rideSosEvents.map((ride, index) => (
+                                    <motion.div
+                                        key={ride.ride_id}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        className="glass-card"
+                                        style={{
+                                            borderLeft: '4px solid var(--danger)',
+                                            background: 'rgba(239, 68, 68, 0.05)',
+                                            padding: 'var(--space-md)'
+                                        }}
+                                    >
+                                        <div className="flex-between mb-sm">
+                                            <h4 style={{ margin: 0 }}>👤 {ride.woman_name}</h4>
+                                            <span className="badge badge-danger">RIDE SOS</span>
+                                        </div>
+                                        <div style={{ fontSize: 'var(--font-size-sm)', display: 'grid', gap: '4px' }}>
+                                            <p><strong>📞 Phone:</strong> {ride.woman_phone}</p>
+                                            <p><strong>🚙 Vehicle:</strong> {ride.vehicle_number}</p>
+                                            <p><strong>👤 Driver:</strong> {ride.driver_name}</p>
+                                            <p><strong>📍 From:</strong> {ride.start_time ? new Date(ride.start_time).toLocaleString() : 'N/A'}</p>
+                                            <p className="text-danger"><strong>⏰ SOS Triggered:</strong> {ride.sos_triggered_at ? new Date(ride.sos_triggered_at).toLocaleString() : 'Recently'}</p>
+                                        </div>
                                     </motion.div>
                                 ))}
                             </div>

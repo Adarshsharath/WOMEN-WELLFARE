@@ -21,6 +21,7 @@ import SafetyTips from './pages/women/SafetyTips';
 
 // Police pages
 import PoliceDashboard from './pages/police/NewDashboard';
+import SOSDetails from './pages/police/SOSDetails';
 import FlagZone from './pages/police/FlagZone';
 import PoliceConnect from './pages/police/Connect';
 import MarkZones from './pages/police/MarkZones';
@@ -67,6 +68,7 @@ function App() {
 
                     {/* Police routes */}
                     <Route path="/police" element={<ProtectedRoute allowedRoles={['POLICE']}><PoliceDashboard /></ProtectedRoute>} />
+                    <Route path="/police/sos/:id" element={<ProtectedRoute allowedRoles={['POLICE']}><SOSDetails /></ProtectedRoute>} />
                     <Route path="/police/flag-zone" element={<ProtectedRoute allowedRoles={['POLICE']}><FlagZone /></ProtectedRoute>} />
                     <Route path="/police/connect" element={<ProtectedRoute allowedRoles={['POLICE']}><PoliceConnect /></ProtectedRoute>} />
                     <Route path="/police/mark-zones" element={<ProtectedRoute allowedRoles={['POLICE']}><MarkZones /></ProtectedRoute>} />

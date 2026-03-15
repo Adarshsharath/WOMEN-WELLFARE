@@ -98,7 +98,7 @@ const SafetyTips = () => {
 
     const emergencyChecklist = [
         { item: 'Emergency contacts saved in phone', icon: '📞' },
-        { item: 'Her-Assist app installed and set up', icon: '🛡️' },
+        { item: 'HerAssist app installed and set up', icon: '🛡️' },
         { item: 'Location sharing enabled', icon: '📍' },
         { item: 'Personal alarm or whistle', icon: '🔔' },
         { item: 'Pepper spray (where legal)', icon: '🌶️' },
@@ -111,7 +111,7 @@ const SafetyTips = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">💡 Safety Tips</div>
+                    <div className="navbar-brand">HerAssist</div>
                     <ul className="navbar-nav">
                         <li><Link to="/woman" className="nav-link">← Back to Home</Link></li>
                     </ul>

@@ -47,7 +47,7 @@ const AdminApprovals = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Admin</div>
+                    <div className="navbar-brand">HerAssist Admin</div>
                     <ul className="navbar-nav">
                         <li><Link to="/admin" className="nav-link active">Approvals</Link></li>
                         <li><Link to="/admin/flagged-users" className="nav-link">Flagged Users</Link></li>

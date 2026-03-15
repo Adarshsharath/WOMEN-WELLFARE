@@ -37,7 +37,7 @@ const WomenHome = () => {
             {/* Navigation */}
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist</div>
+                    <div className="navbar-brand">HerAssist</div>
                     <ul className="navbar-nav">
                         <li><Link to="/woman" className="nav-link active">Home</Link></li>
                         <li><Link to="/woman/ride-safety" className="nav-link">Ride Safety</Link></li>

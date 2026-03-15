@@ -20,8 +20,10 @@ const COLORS = {
 const PoliceDashboard = () => {
     const { logout } = useAuth();
     const [sosEvents, setSosEvents] = useState([]);
+    const [rideSosEvents, setRideSosEvents] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [showResolvedRides, setShowResolvedRides] = useState(false);
 
     useEffect(() => {
         loadDashboardData();
@@ -31,16 +33,40 @@ const PoliceDashboard = () => {
 
     const loadDashboardData = async () => {
         try {
-            const [sosData, statsData] = await Promise.all([
+            const [sosData, rideSosData, statsData] = await Promise.all([
                 policeAPI.getSOSFeed(),
+                policeAPI.getRideSafetySOS(),
                 policeAPI.getDashboardStats()
             ]);
             setSosEvents(sosData.sos_events || []);
+            setRideSosEvents(rideSosData.rides || []);
             setStats(statsData.stats);
             setLoading(false);
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
             setLoading(false);
+        }
+    };
+
+    const handleResolveRide = async (rideId) => {
+        if (!window.confirm('Mark this Ride SOS as resolved?')) return;
+        try {
+            await policeAPI.resolveRideSOS(rideId);
+            loadDashboardData();
+        } catch (error) {
+            console.error('Failed to resolve ride SOS:', error);
+            alert(error.message || 'Failed to resolve ride SOS');
+        }
+    };
+
+    const handleQuickResolve = async (id) => {
+        if (!window.confirm('Mark this SOS alert as resolved?')) return;
+        try {
+            await policeAPI.resolveSOS(id);
+            loadDashboardData(); // Refresh data
+        } catch (error) {
+            console.error('Failed to resolve SOS:', error);
+            alert('Failed to resolve SOS');
         }
     };
 
@@ -51,7 +77,7 @@ const PoliceDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">Her-Assist Police</div>
+                        <div className="navbar-brand">HerAssist Police</div>
                         <ul className="navbar-nav">
                             <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -71,7 +97,7 @@ const PoliceDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Police</div>
+                    <div className="navbar-brand">HerAssist Police</div>
                     <ul className="navbar-nav">
                         <li><Link to="/police" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/police/mark-zones" className="nav-link">Mark Zones</Link></li>
@@ -85,7 +111,7 @@ const PoliceDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            <span>🚔</span> Police Dashboard | Her-Assist
+                            <span>🚔</span> Police Dashboard | HerAssist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)', fontWeight: '500' }}>
                             Real-time monitoring and analytics dashboard
@@ -444,13 +470,138 @@ const PoliceDashboard = () => {
                                         <strong>🕐 Time:</strong> {new Date(sos.timestamp).toLocaleString()}
                                     </p>
 
-                                    <Link
-                                        to={`/police/sos/${sos.id}`}
-                                        className="btn btn-danger btn-sm"
-                                        style={{ marginTop: 'var(--space-sm)', width: '100%' }}
-                                    >
-                                        View Details & Respond
-                                    </Link>
+                                    <div style={{ display: 'flex', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                        <Link
+                                            to={`/police/sos/${sos.id}`}
+                                            className="btn btn-danger btn-sm"
+                                            style={{ flex: 1 }}
+                                        >
+                                            View Details
+                                        </Link>
+                                        <button
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                handleQuickResolve(sos.id);
+                                            }}
+                                            className="btn btn-success btn-sm"
+                                            style={{ flex: 1 }}
+                                        >
+                                            Resolve
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </motion.div>
+                
+                {/* Ride Safety SOS Section */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9 }}
+                    className="glass-card"
+                    style={{ marginTop: 'var(--space-2xl)' }}
+                >
+                    <h3 style={{ marginBottom: 'var(--space-lg)', display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', color: 'var(--primary)' }}>
+                        🚗 Ride Safety SOS Alerts
+                    </h3>
+
+                    <div className="flex gap-md mb-lg">
+                        <button 
+                            className={`btn btn-sm ${!showResolvedRides ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setShowResolvedRides(false)}
+                        >
+                            Active Alerts ({rideSosEvents.filter(r => r.status === 'SOS_TRIGGERED').length})
+                        </button>
+                        <button 
+                            className={`btn btn-sm ${showResolvedRides ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => setShowResolvedRides(true)}
+                        >
+                            Resolved ({rideSosEvents.filter(r => r.status === 'RESOLVED').length})
+                        </button>
+                    </div>
+
+                    {rideSosEvents.filter(r => showResolvedRides ? r.status === 'RESOLVED' : r.status === 'SOS_TRIGGERED').length === 0 ? (
+                        <div style={{ textAlign: 'center', padding: 'var(--space-xl)', color: 'var(--gray-500)' }}>
+                            <p>No {showResolvedRides ? 'resolved' : 'active'} ride safety SOS alerts.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-2" style={{ gap: 'var(--space-md)' }}>
+                            {rideSosEvents
+                                .filter(r => showResolvedRides ? r.status === 'RESOLVED' : r.status === 'SOS_TRIGGERED')
+                                .map((ride, index) => (
+                                <motion.div
+                                    key={ride.ride_id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: 0.1 * index }}
+                                    className="glass-card-dark"
+                                    style={{
+                                        borderLeft: `4px solid ${ride.status === 'RESOLVED' ? 'var(--success)' : 'var(--danger)'}`,
+                                        background: ride.status === 'RESOLVED' ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)',
+                                        padding: 'var(--space-md)'
+                                    }}
+                                >
+                                    <div className="flex-between mb-sm">
+                                        <h4 style={{ margin: 0 }}>👤 {ride.woman_name}</h4>
+                                        <span className={`badge ${ride.status === 'RESOLVED' ? 'badge-success' : 'badge-danger'}`}>
+                                            {ride.status === 'RESOLVED' ? 'RESOLVED' : 'RIDE SOS'}
+                                        </span>
+                                    </div>
+                                    <div style={{ fontSize: 'var(--font-size-sm)', display: 'grid', gap: '8px', color: 'var(--gray-700)' }}>
+                                        <div className="grid grid-2" style={{ gap: 'var(--space-md)' }}>
+                                            <div>
+                                                <p><strong>📞 Phone:</strong> {ride.woman_phone}</p>
+                                                <p><strong>🚙 Vehicle:</strong> {ride.vehicle_number}</p>
+                                                <p><strong>👤 Driver:</strong> {ride.driver_name}</p>
+                                            </div>
+                                            <div>
+                                                <p><strong>🏁 Destination:</strong> {ride.destination_name || 'Not specified'}</p>
+                                                <p><strong>🕒 Started:</strong> {ride.start_time ? new Date(ride.start_time).toLocaleString() : 'N/A'}</p>
+                                                <p className="text-danger"><strong>⏰ SOS at:</strong> {ride.sos_triggered_at ? new Date(ride.sos_triggered_at).toLocaleString() : 'Recently'}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style={{ borderTop: '1px solid rgba(0,0,0,0.1)', paddingTop: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
+                                            <p style={{ marginBottom: 'var(--space-xs)' }}><strong>📍 Locations:</strong></p>
+                                            <div className="flex gap-sm">
+                                                <a 
+                                                    href={`https://maps.google.com/?q=${ride.start_lat},${ride.start_lng}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-sm btn-outline-info"
+                                                    style={{ fontSize: 'var(--font-size-xs)' }}
+                                                >
+                                                    Start Location 🗺️
+                                                </a>
+                                                <a 
+                                                    href={`https://maps.google.com/?q=${ride.sos_lat},${ride.sos_lng}`} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className="btn btn-sm btn-outline-danger"
+                                                    style={{ fontSize: 'var(--font-size-xs)' }}
+                                                >
+                                                    Last Known SOS Loc 📍
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        {ride.status === 'SOS_TRIGGERED' && (
+                                            <button
+                                                onClick={() => handleResolveRide(ride.ride_id)}
+                                                className="btn btn-success btn-sm w-full mt-md"
+                                                style={{ fontWeight: 'bold' }}
+                                            >
+                                                ✅ Resolve This SOS
+                                            </button>
+                                        )}
+                                        {ride.status === 'RESOLVED' && (
+                                            <p className="text-success mt-sm" style={{ textAlign: 'center', fontWeight: 'bold' }}>
+                                                ✅ Resolved at {new Date(ride.resolved_at).toLocaleString()}
+                                            </p>
+                                        )}
+                                    </div>
                                 </motion.div>
                             ))}
                         </div>

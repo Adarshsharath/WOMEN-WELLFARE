@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-from models import db, User
+from models import db, User, SOSEvent, EmergencyContact
 from auth import register_woman, register_community, login_user
+from services.ride_service import start_ride_monitor
+from services.sms_service import send_bulk_emergency_sms
+from services.whatsapp_service import send_bulk_emergency_whatsapp
 from dotenv import load_dotenv
 import os
 
@@ -131,4 +134,9 @@ def init_database():
 
 if __name__ == '__main__':
     init_database()
+    # Start ride safety monitor
+    start_ride_monitor(
+        app, db, SOSEvent, EmergencyContact, User, 
+        send_bulk_emergency_sms, send_bulk_emergency_whatsapp
+    )
     app.run(debug=True, host='0.0.0.0', port=5000, threaded=True)

@@ -95,9 +95,23 @@ def role_required(*allowed_roles):
     return decorator
 
 
+import re
+
 def validate_secret_code(role, code):
     """Validate secret code for community registration"""
     return SECRET_CODES.get(role) == code
+
+
+def validate_email_phone(email, phone):
+    """Strictly validate email and phone format"""
+    email_regex = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    phone_regex = r'^\d{10}$'
+    
+    if not re.match(email_regex, email):
+        return False, "Invalid email format"
+    if not re.match(phone_regex, phone):
+        return False, "Phone number must be exactly 10 digits"
+    return True, None
 
 
 def register_woman(data, document_file=None, doc_type=None):
@@ -117,6 +131,11 @@ def register_woman(data, document_file=None, doc_type=None):
         image_bytes = document_file.read()
         if not verify_document(image_bytes, doc_type):
             return {'error': 'Document verification failed. Only female users can register.'}, 400
+
+        # Strict validation for email and phone
+        is_valid, val_error = validate_email_phone(data['email'], data['phone'])
+        if not is_valid:
+            return {'error': val_error}, 400
 
         # Check if email or phone already exists
         if User.query.filter_by(email=data['email']).first():
@@ -169,6 +188,11 @@ def register_community(data):
         # Validate secret code
         if not validate_secret_code(data['role'], data['secret_code']):
             return {'error': 'Invalid secret code'}, 400
+
+        # Strict validation for email and phone
+        is_valid, val_error = validate_email_phone(data['email'], data['phone'])
+        if not is_valid:
+            return {'error': val_error}, 400
         
         # Check if email or phone already exists
         if User.query.filter_by(email=data['email']).first():

@@ -205,7 +205,7 @@ const AIChatbot = () => {
         setIsCalling(true);
         setIsMicActive(true);
         setCallStatus('In Call');
-        const greet = "Hello, I am your Her-Assist assistant. Are you feeling safe?";
+        const greet = "Hello, I am your HerAssist assistant. Are you feeling safe?";
         setMessages(prev => [...prev, { role: 'assistant', content: greet }]);
         speak(greet);
     };
@@ -240,7 +240,7 @@ const AIChatbot = () => {
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
                                 <div style={{ width: '10px', height: '10px', background: '#10B981', borderRadius: '50%', boxShadow: '0 0 10px #10B981' }}></div>
-                                <span style={{ fontWeight: '700', letterSpacing: '0.5px' }}>Her-Assist Guardian</span>
+                                <span style={{ fontWeight: '700', letterSpacing: '0.5px' }}>HerAssist Guardian</span>
                             </div>
                             <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
                                 <button onClick={startCall} style={{ background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', cursor: 'pointer', padding: '5px 10px', borderRadius: '5px' }}>📞 Call</button>
@@ -295,6 +295,7 @@ const AIChatbot = () => {
                                         {interimTranscript && `"${interimTranscript}..."`}
                                     </div>
 
+                                    <h2 style={{ margin: 0, fontSize: '1.2rem' }}>🤖 HerAssist AI</h2>
                                     <div style={{ fontSize: '24px', opacity: 0.8, marginBottom: '40px' }}>{formatTime(callTimer)}</div>
 
                                     <div style={{ display: 'flex', gap: 'var(--space-xl)', alignItems: 'center' }}>
@@ -366,9 +367,9 @@ const AIChatbot = () => {
                             ))}
                             {loading && (
                                 <div style={{ textAlign: 'left' }}>
-                                    <div className="spinner-dots">
-                                        <span></span><span></span><span></span>
-                                    </div>
+                                    <div className="chat-message bot">
+                                <p>Hi! I'm HerAssist AI, your safety companion. How can I help you today?</p>
+                            </div>
                                 </div>
                             )}
                             <div ref={messagesEndRef} />

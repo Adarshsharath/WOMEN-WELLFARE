@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { womenAPI } from '../../utils/api';
 
@@ -17,17 +17,20 @@ const FakeCall = () => {
     const [countdown, setCountdown] = useState(0);
     const [callTimer, setCallTimer] = useState(0);
     const navigate = useNavigate();
-    const API_BASE = 'http://localhost:5000';
 
     // Refs for audio and timers
     const timerRef = useRef(null);
     const callDurationRef = useRef(null);
     const ringtoneRef = useRef(null);
     const recordingRef = useRef(null);
+    const fileInputRef = useRef(null);
+
+    const [uploading, setUploading] = useState(null); // ID of caller being uploaded
+    const [uploadStatus, setUploadStatus] = useState(null); // { type, message }
 
     // Audio paths - the backend serves /audio directly
-    const RINGTONE_URL = `${API_BASE}/audio/ringtone/ringtone.mp3`;
-    const GET_RECORDING_URL = (id) => `${API_BASE}/audio/recordings/${id === 'brother' ? 'brother' : 'brother'}.mp3`;
+    const RINGTONE_URL = `/audio/ringtone/ringtone.mp3`;
+    const GET_RECORDING_URL = (id) => `/audio/recordings/${id}.mp3`;
 
     // Handle Countdown
     useEffect(() => {
@@ -65,8 +68,18 @@ const FakeCall = () => {
         if (status === 'IN_CALL') {
             // Start recording playback
             const url = GET_RECORDING_URL(selectedCaller.id);
-            recordingRef.current = new Audio(url);
-            recordingRef.current.play().catch(e => console.error("Recording error:", e));
+            const audio = new Audio(url);
+            recordingRef.current = audio;
+            
+            audio.play().catch(e => {
+                console.warn(`Recording for ${selectedCaller.id} not found, falling back to brother.mp3`, e);
+                // Fallback to brother.mp3 if specific recording fails
+                if (selectedCaller.id !== 'brother') {
+                    const fallbackAudio = new Audio(GET_RECORDING_URL('brother'));
+                    recordingRef.current = fallbackAudio;
+                    fallbackAudio.play().catch(err => console.error("Fallback recording error:", err));
+                }
+            });
 
             // Start timer
             callDurationRef.current = setInterval(() => {
@@ -114,6 +127,43 @@ const FakeCall = () => {
         setStatus('IDLE');
         setCallTimer(0);
         navigate('/woman');
+    };
+
+    const handleFileChange = async (e, callerId) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        // Basic validation
+        if (!file.type.startsWith('audio/')) {
+            setUploadStatus({ type: 'error', message: 'Please select an audio file' });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('audio', file);
+        formData.append('callerId', callerId);
+
+        setUploading(callerId);
+        setUploadStatus(null);
+
+        try {
+            await womenAPI.uploadFakeCallAudio(formData);
+            setUploadStatus({ type: 'success', message: `Audio updated for ${callerId}` });
+            // Small delay to hide message
+            setTimeout(() => setUploadStatus(null), 3000);
+        } catch (error) {
+            console.error('Upload failed:', error);
+            setUploadStatus({ type: 'error', message: 'Upload failed. Please try again.' });
+        } finally {
+            setUploading(null);
+            // Clear input
+            e.target.value = '';
+        }
+    };
+
+    const triggerUpload = (callerId) => {
+        setSelectedCaller(CALLERS.find(c => c.id === callerId));
+        fileInputRef.current.click();
     };
 
     if (status === 'RINGING') {
@@ -294,6 +344,26 @@ const FakeCall = () => {
                 <div className="grid grid-2" style={{ alignItems: 'start' }}>
                     <div className="glass-card">
                         <h3>1. Select Caller</h3>
+                        {uploadStatus && (
+                            <div style={{
+                                padding: 'var(--space-sm)',
+                                borderRadius: 'var(--radius-md)',
+                                background: uploadStatus.type === 'success' ? 'var(--success-light)' : 'var(--danger-light)',
+                                color: 'white',
+                                marginBottom: 'var(--space-md)',
+                                fontSize: '0.9rem',
+                                textAlign: 'center'
+                            }}>
+                                {uploadStatus.message}
+                            </div>
+                        )}
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                            accept="audio/*"
+                            onChange={(e) => handleFileChange(e, selectedCaller.id)}
+                        />
                         <div className="grid grid-2" style={{ gap: 'var(--space-md)', marginTop: 'var(--space-lg)' }}>
                             {CALLERS.map(caller => (
                                 <motion.div
@@ -308,9 +378,33 @@ const FakeCall = () => {
                                         background: selectedCaller.id === caller.id ? 'var(--gray-50)' : 'white',
                                         cursor: 'pointer',
                                         textAlign: 'center',
-                                        boxShadow: 'var(--shadow-sm)'
+                                        boxShadow: 'var(--shadow-sm)',
+                                        position: 'relative'
                                     }}
                                 >
+                                    <div 
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            triggerUpload(caller.id);
+                                        }}
+                                        style={{
+                                            position: 'absolute',
+                                            top: '10px',
+                                            right: '10px',
+                                            width: '30px',
+                                            height: '30px',
+                                            background: 'var(--gray-100)',
+                                            borderRadius: '50%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            fontSize: '0.8rem',
+                                            opacity: 0.8
+                                        }}
+                                        title="Upload custom audio"
+                                    >
+                                        {uploading === caller.id ? '⏳' : '✏️'}
+                                    </div>
                                     <div style={{ fontSize: '2.5rem', marginBottom: 'var(--space-sm)' }}>{caller.icon}</div>
                                     <div style={{ fontWeight: '600' }}>{caller.name}</div>
                                 </motion.div>

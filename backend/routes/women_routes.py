@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify
-from models import db, EmergencyContact, SOSEvent, LocationUpdate, AbuseMonitoring, FlaggedZone, RideSafetyTimer
+from models import db, User, EmergencyContact, SOSEvent, LocationUpdate, AbuseMonitoring, FlaggedZone, RideSafetyTimer
+from services.ride_service import RideService
 from auth import token_required, role_required
 from services.sms_service import send_bulk_emergency_sms
 from services.whatsapp_service import send_bulk_emergency_whatsapp
 from services.routes_service import calculate_safe_routes
 from datetime import datetime, timedelta
+import os
+from werkzeug.utils import secure_filename
 
 women_bp = Blueprint('women', __name__)
 
@@ -262,6 +265,40 @@ def log_fake_call(current_user):
     }), 200
 
 
+@women_bp.route('/fake-call/upload-audio', methods=['POST'])
+@token_required
+@role_required('WOMAN')
+def upload_fake_call_audio(current_user):
+    """Upload custom audio for a fake call profile"""
+    if 'audio' not in request.files:
+        return jsonify({'error': 'No audio file uploaded'}), 400
+    
+    caller_id = request.form.get('callerId')
+    if not caller_id or caller_id not in ['mom', 'dad', 'friend', 'brother']:
+        return jsonify({'error': 'Invalid caller ID'}), 400
+    
+    file = request.files['audio']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    # Ensure directory exists
+    recording_dir = os.path.join('audio', 'recordings')
+    if not os.path.exists(recording_dir):
+        os.makedirs(recording_dir)
+    
+    # Save file with consistent naming: callerId.mp3
+    filename = f"{caller_id}.mp3"
+    filepath = os.path.join(recording_dir, filename)
+    
+    file.save(filepath)
+    
+    return jsonify({
+        'success': True,
+        'message': f'Audio recording updated for {caller_id}',
+        'filename': filename
+    }), 200
+
+
 @women_bp.route('/safe-routes', methods=['POST'])
 @token_required
 @role_required('WOMAN')
@@ -309,61 +346,31 @@ def start_ride_timer(current_user):
     if duration < 1 or duration > 480:  # Max 8 hours
         return jsonify({'error': 'Duration must be between 1 and 480 minutes'}), 400
     
-    # Check for active timers
-    active_timer = RideSafetyTimer.query.filter_by(
-        woman_id=current_user.id,
-        status='ACTIVE'
-    ).first()
-    
-    if active_timer:
-        return jsonify({'error': 'You already have an active ride timer'}), 400
-    
-    # Create new timer
-    expires_at = datetime.utcnow() + timedelta(minutes=duration)
-    
-    timer = RideSafetyTimer(
-        woman_id=current_user.id,
-        duration_minutes=duration,
-        start_latitude=data.get('start_latitude'),
-        start_longitude=data.get('start_longitude'),
-        destination_name=data.get('destination_name'),
-        ride_type=data.get('ride_type'),
-        vehicle_number=data.get('vehicle_number'),
-        driver_name=data.get('driver_name'),
-        expires_at=expires_at,
-        status='ACTIVE'
+    ride, error = RideService.start_ride(
+        current_user.id, 
+        current_user.name, 
+        current_user.phone, 
+        data
     )
     
-    db.session.add(timer)
-    db.session.commit()
+    if error:
+        return jsonify({'error': error}), 400
     
     return jsonify({
         'success': True,
         'message': 'Ride timer started',
-        'timer': timer.to_dict()
+        'timer': ride
     }), 201
 
 
-@women_bp.route('/ride-timer/<int:timer_id>/check-in', methods=['POST'])
+@women_bp.route('/ride-timer/<ride_id>/check-in', methods=['POST'])
 @token_required
 @role_required('WOMAN')
-def check_in_ride_timer(current_user, timer_id):
-    """Check in to confirm safety - cancels the timer"""
-    timer = RideSafetyTimer.query.filter_by(
-        id=timer_id,
-        woman_id=current_user.id
-    ).first()
+def check_in_ride_timer(current_user, ride_id):
+    success, error = RideService.check_in(current_user.id, ride_id)
     
-    if not timer:
-        return jsonify({'error': 'Timer not found'}), 404
-    
-    if timer.status != 'ACTIVE':
-        return jsonify({'error': 'Timer is not active'}), 400
-    
-    timer.status = 'CHECKED_IN'
-    timer.checked_in_at = datetime.utcnow()
-    
-    db.session.commit()
+    if not success:
+        return jsonify({'error': error}), 400 if error == "Ride is not active" else 404
     
     return jsonify({
         'success': True,
@@ -371,25 +378,14 @@ def check_in_ride_timer(current_user, timer_id):
     }), 200
 
 
-@women_bp.route('/ride-timer/<int:timer_id>/cancel', methods=['PUT'])
+@women_bp.route('/ride-timer/<ride_id>/cancel', methods=['PUT'])
 @token_required
 @role_required('WOMAN')
-def cancel_ride_timer(current_user, timer_id):
-    """Cancel an active ride timer"""
-    timer = RideSafetyTimer.query.filter_by(
-        id=timer_id,
-        woman_id=current_user.id
-    ).first()
+def cancel_ride_timer(current_user, ride_id):
+    success, error = RideService.cancel_ride(current_user.id, ride_id)
     
-    if not timer:
-        return jsonify({'error': 'Timer not found'}), 404
-    
-    if timer.status != 'ACTIVE':
-        return jsonify({'error': 'Timer is not active'}), 400
-    
-    timer.status = 'CANCELLED'
-    
-    db.session.commit()
+    if not success:
+        return jsonify({'error': error}), 400 if error == "Ride is not active" else 404
     
     return jsonify({
         'success': True,
@@ -401,89 +397,31 @@ def cancel_ride_timer(current_user, timer_id):
 @token_required
 @role_required('WOMAN')
 def get_active_ride_timer(current_user):
-    """Get active ride timer for the woman"""
-    timer = RideSafetyTimer.query.filter_by(
-        woman_id=current_user.id,
-        status='ACTIVE'
-    ).order_by(RideSafetyTimer.started_at.desc()).first()
+    ride = RideService.get_active_ride(current_user.id)
     
-    if not timer:
+    if not ride:
         return jsonify({'success': True, 'timer': None}), 200
     
-    # Check if timer has expired
-    if datetime.utcnow() > timer.expires_at and timer.status == 'ACTIVE':
-        # Timer expired - trigger automatic SOS
-        timer.status = 'EXPIRED'
-        db.session.commit()
-        
-        # Get current location or use start location
-        sos_latitude = timer.start_latitude or 0
-        sos_longitude = timer.start_longitude or 0
-        
-        # Get emergency contacts
-        contacts = EmergencyContact.query.filter_by(woman_id=current_user.id).all()
-        
-        if contacts:
-            # Create SOS event
-            sos_event = SOSEvent(
-                woman_id=current_user.id,
-                latitude=sos_latitude,
-                longitude=sos_longitude,
-                battery_percentage=0,
-                status='ACTIVE'
-            )
-            db.session.add(sos_event)
-            
-            # Update abuse monitoring
-            monitoring = AbuseMonitoring.query.filter_by(woman_id=current_user.id).first()
-            if not monitoring:
-                monitoring = AbuseMonitoring(woman_id=current_user.id, sos_count=1)
-                db.session.add(monitoring)
-            else:
-                monitoring.sos_count += 1
-                monitoring.last_updated = datetime.utcnow()
-            
-            db.session.commit()
-            
-            # Send emergency alerts
-            contact_list = [{'contact_name': c.contact_name, 'contact_phone': c.contact_phone} for c in contacts]
-            
-            alert_message = f"🚨 AUTOMATIC RIDE SAFETY ALERT! {current_user.name} did not check in after their ride timer expired."
-            if timer.ride_type:
-                alert_message += f" Ride type: {timer.ride_type}"
-            if timer.vehicle_number:
-                alert_message += f", Vehicle: {timer.vehicle_number}"
-            if timer.driver_name:
-                alert_message += f", Driver: {timer.driver_name}"
-            
-            send_bulk_emergency_sms(
-                contact_list,
-                current_user.name,
-                sos_latitude,
-                sos_longitude,
-                0,
-                custom_message=alert_message
-            )
-            
-            send_bulk_emergency_whatsapp(
-                contact_list,
-                current_user.name,
-                sos_latitude,
-                sos_longitude,
-                0,
-                custom_message=alert_message
-            )
-        
+    # Check if timer has expired (though monitor should handle this, 
+    # we check here too for immediate frontend feedback)
+    expires_str = ride['expires_at'].replace('Z', '+00:00')
+    expires_at = datetime.fromisoformat(expires_str)
+    
+    # Ensure aware comparison
+    if expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    
+    now = datetime.now(timezone.utc)
+    if now > expires_at:
         return jsonify({
             'success': True,
-            'timer': timer.to_dict(),
-            'expired': True,
-            'sos_triggered': len(contacts) > 0
+            'timer': ride,
+            'expired': True
         }), 200
     
     return jsonify({
         'success': True,
-        'timer': timer.to_dict(),
+        'timer': ride,
         'expired': False
     }), 200
 
@@ -501,3 +439,19 @@ def get_ride_timer_history(current_user):
         'success': True,
         'timers': [timer.to_dict() for timer in timers]
     }), 200
+
+
+@women_bp.route('/ride-timer/location', methods=['POST'])
+@token_required
+@role_required('WOMAN')
+def update_ride_location(current_user):
+    data = request.json
+    lat = data.get('latitude')
+    lng = data.get('longitude')
+    ride_id = data.get('ride_id')
+    
+    if not all([lat, lng, ride_id]):
+        return jsonify({'success': False, 'error': 'Missing required fields'}), 400
+        
+    success = RideService.update_location(current_user.id, ride_id, lat, lng)
+    return jsonify({'success': success})

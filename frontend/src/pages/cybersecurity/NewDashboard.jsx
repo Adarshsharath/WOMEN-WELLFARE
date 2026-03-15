@@ -42,7 +42,7 @@ const CybersecurityDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">Her-Assist Cybersecurity</div>
+                        <div className="navbar-brand">HerAssist Cybersecurity</div>
                         <ul className="navbar-nav">
                             <li><Link to="/cybersecurity" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/cybersecurity/monitoring" className="nav-link">Monitoring</Link></li>
@@ -61,7 +61,7 @@ const CybersecurityDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Cybersecurity</div>
+                    <div className="navbar-brand">HerAssist Cybersecurity</div>
                     <ul className="navbar-nav">
                         <li><Link to="/cybersecurity" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/cybersecurity/monitoring" className="nav-link">Monitoring</Link></li>
@@ -74,7 +74,7 @@ const CybersecurityDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            💻 Cybersecurity Dashboard | Her-Assist
+                            💻 Cybersecurity Dashboard | HerAssist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontWeight: '500', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)' }}>
                             Real-time monitoring and threat detection

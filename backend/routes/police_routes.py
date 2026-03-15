@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from models import db, SOSEvent, FlaggedZone, ChatMessage, Issue
 from auth import token_required, role_required
 from datetime import datetime
+from services.ride_service import RideService
 
 police_bp = Blueprint('police', __name__)
 
@@ -37,6 +38,28 @@ def get_sos_details(current_user, sos_id):
         'success': True,
         'sos_event': sos_event.to_dict(),
         'location_updates': location_updates
+    }), 200
+
+
+@police_bp.route('/sos/<int:sos_id>/resolve', methods=['PUT'])
+@token_required
+@role_required('POLICE', 'EMERGENCY')
+def resolve_sos(current_user, sos_id):
+    """Mark SOS event as resolved by police"""
+    sos_event = SOSEvent.query.get(sos_id)
+    
+    if not sos_event:
+        return jsonify({'error': 'SOS event not found'}), 404
+    
+    sos_event.status = 'RESOLVED'
+    sos_event.resolved_at = datetime.utcnow()
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': 'SOS event marked as resolved',
+        'sos_event': sos_event.to_dict()
     }), 200
 
 
@@ -343,3 +366,31 @@ def get_dashboard_stats(current_user):
             'high_risk_areas': [zone.to_dict() for zone in high_risk_areas]
         }
     }), 200
+
+
+@police_bp.route('/ride-safety-sos', methods=['GET'])
+@token_required
+@role_required('POLICE')
+def get_ride_safety_sos(current_user):
+    """Get SOS alerts specifically from ride safety timer"""
+    sos_rides = RideService.get_sos_triggered_rides()
+    return jsonify({
+        'success': True,
+        'rides': sos_rides
+    }), 200
+
+
+@police_bp.route('/ride-safety/resolve/<ride_id>', methods=['PUT'])
+@token_required
+@role_required('POLICE')
+def resolve_ride_sos(current_user, ride_id):
+    """Resolve a ride safety SOS alert"""
+    if RideService.resolve_ride(ride_id):
+        return jsonify({
+            'success': True,
+            'message': 'Ride SOS resolved successfully'
+        }), 200
+    return jsonify({
+        'success': False,
+        'error': 'Ride not found'
+    }), 404

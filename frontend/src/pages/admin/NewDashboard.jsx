@@ -45,7 +45,7 @@ const AdminDashboard = () => {
             <div className="page-wrapper">
                 <nav className="navbar">
                     <div className="navbar-container container">
-                        <div className="navbar-brand">Her-Assist Admin</div>
+                        <div className="navbar-brand">HerAssist Admin</div>
                         <ul className="navbar-nav">
                             <li><Link to="/admin" className="nav-link active">Dashboard</Link></li>
                             <li><Link to="/admin/approvals" className="nav-link">Approvals</Link></li>
@@ -67,7 +67,7 @@ const AdminDashboard = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Admin</div>
+                    <div className="navbar-brand">HerAssist Admin</div>
                     <ul className="navbar-nav">
                         <li><Link to="/admin" className="nav-link active">Dashboard</Link></li>
                         <li><Link to="/admin/approvals" className="nav-link">Approvals</Link></li>
@@ -81,7 +81,7 @@ const AdminDashboard = () => {
                 <div className="glass-card" style={{ marginBottom: 'var(--space-2xl)', background: 'var(--white)', padding: 'var(--space-xl)' }}>
                     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
                         <h1 style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', marginBottom: 'var(--space-md)' }}>
-                            👑 Admin Dashboard | Her-Assist
+                            👑 Admin Dashboard | HerAssist
                         </h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-lg)', marginBottom: 'var(--space-xl)', fontWeight: '500' }}>
                             System-wide monitoring and management

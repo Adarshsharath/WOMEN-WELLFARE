@@ -31,6 +31,23 @@ const RegisterCommunity = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+
+        // Strict Email and Phone Validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const phoneRegex = /^\d{10}$/;
+
+        if (!emailRegex.test(formData.email)) {
+            setError('Invalid email format (e.g., user@example.com)');
+            setLoading(false);
+            return;
+        }
+
+        if (!phoneRegex.test(formData.phone)) {
+            setError('Phone number must be exactly 10 digits');
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
 
         try {
@@ -150,6 +167,8 @@ const RegisterCommunity = () => {
                                 className="form-input"
                                 value={formData.phone}
                                 onChange={handleChange}
+                                placeholder="Enter your 10-digit phone number"
+                                maxLength="10"
                                 required
                             />
                         </div>

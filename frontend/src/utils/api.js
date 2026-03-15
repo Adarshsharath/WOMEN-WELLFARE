@@ -93,6 +93,11 @@ export const womenAPI = {
         method: 'POST',
     }),
 
+    uploadFakeCallAudio: (formData) => apiRequest('/women/fake-call/upload-audio', {
+        method: 'POST',
+        body: formData,
+    }),
+
     calculateSafeRoutes: (data) => apiRequest('/women/safe-routes', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -117,6 +122,10 @@ export const womenAPI = {
     }),
 
     getRideTimerHistory: () => apiRequest('/women/ride-timer/history'),
+    updateRideLocation: (rideId, latitude, longitude) => apiRequest('/women/ride-timer/location', {
+        method: 'POST',
+        body: JSON.stringify({ ride_id: rideId, latitude, longitude })
+    }),
 };
 
 // Police API
@@ -124,6 +133,10 @@ export const policeAPI = {
     getSOSFeed: () => apiRequest('/police/sos-feed'),
 
     getSOSDetails: (id) => apiRequest(`/police/sos/${id}`),
+
+    resolveSOS: (id) => apiRequest(`/police/sos/${id}/resolve`, {
+        method: 'PUT',
+    }),
 
     markZone: (data) => apiRequest('/police/flag-zone', {
         method: 'POST',
@@ -157,6 +170,8 @@ export const policeAPI = {
     getAllIssues: () => apiRequest('/police/issues/all'),
 
     getDashboardStats: () => apiRequest('/police/dashboard-stats'),
+    getRideSafetySOS: () => apiRequest('/police/ride-safety-sos'),
+    resolveRideSOS: (rideId) => apiRequest(`/police/ride-safety/resolve/${rideId}`, { method: 'PUT' }),
 };
 
 // Infrastructure API

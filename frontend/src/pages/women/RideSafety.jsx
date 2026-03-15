@@ -27,10 +27,24 @@ const RideSafety = () => {
     useEffect(() => {
         if (activeTimer && activeTimer.expires_at) {
             updateTimeRemaining(activeTimer);
-            const interval = setInterval(() => {
+            const timerInterval = setInterval(() => {
                 updateTimeRemaining(activeTimer);
             }, 1000);
-            return () => clearInterval(interval);
+            
+            // Periodic location updates every 30 seconds
+            const locationInterval = setInterval(async () => {
+                try {
+                    const location = await getCurrentLocation();
+                    await womenAPI.updateRideLocation(activeTimer.ride_id, location.latitude, location.longitude);
+                } catch (err) {
+                    console.error('Location update failed:', err);
+                }
+            }, 30000);
+
+            return () => {
+                clearInterval(timerInterval);
+                clearInterval(locationInterval);
+            };
         }
     }, [activeTimer]);
 
@@ -42,8 +56,8 @@ const RideSafety = () => {
                 setTimeRemaining(null); // Reset before updating
                 setTimeout(() => updateTimeRemaining(response.timer), 100);
                 
-                if (response.expired) {
-                    alert('⚠️ Your ride timer has expired and automatic SOS has been triggered!');
+                if (response.expired || response.timer.status === 'SOS_TRIGGERED') {
+                    alert('🚨 SOS Sent! Your ride timer expired and help has been notified.');
                     navigate('/woman/sos-active');
                 }
             } else {
@@ -57,11 +71,13 @@ const RideSafety = () => {
 
     const updateTimeRemaining = (timer) => {
         const timerToUse = timer || activeTimer;
-        if (!timerToUse) return;
+        if (!timerToUse || !timerToUse.expires_at) return;
         
         const expiresAt = new Date(timerToUse.expires_at);
         const now = new Date();
-        const diff = expiresAt - now;
+        
+        // JS Date.getTime() is always UTC epoch ms.
+        const diff = expiresAt.getTime() - now.getTime();
         
         if (diff <= 0) {
             setTimeRemaining({ hours: 0, minutes: 0, seconds: 0, expired: true });
@@ -97,8 +113,8 @@ const RideSafety = () => {
             
             const data = {
                 ...formData,
-                start_latitude: location.latitude,
-                start_longitude: location.longitude
+                latitude: location.latitude,
+                longitude: location.longitude
             };
 
             const response = await womenAPI.startRideTimer(data);
@@ -124,7 +140,7 @@ const RideSafety = () => {
         
         if (confirm('Are you sure you want to check in? This will confirm you are safe.')) {
             try {
-                await womenAPI.checkInRideTimer(activeTimer.id);
+                await womenAPI.checkInRideTimer(activeTimer.ride_id);
                 alert('✅ Checked in successfully! Stay safe!');
                 setActiveTimer(null);
                 setTimeRemaining(null);
@@ -140,7 +156,7 @@ const RideSafety = () => {
         
         if (confirm('Are you sure you want to cancel this timer?')) {
             try {
-                await womenAPI.cancelRideTimer(activeTimer.id);
+                await womenAPI.cancelRideTimer(activeTimer.ride_id);
                 setActiveTimer(null);
                 setTimeRemaining(null);
             } catch (error) {

@@ -8,7 +8,7 @@ FAST2SMS_API_KEY = os.getenv('FAST2SMS_API_KEY')
 FAST2SMS_URL = 'https://www.fast2sms.com/dev/bulkV2'
 
 
-def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
+def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery, custom_message=None):
     """Send emergency SMS via Fast2SMS"""
     try:
         if not FAST2SMS_API_KEY:
@@ -18,14 +18,17 @@ def send_emergency_sms(phone_number, woman_name, latitude, longitude, battery):
         # Debug: Print first 4 chars of the key to verify it's loaded correctly
         print(f"DEBUG: Attempting SMS with key starting with: {FAST2SMS_API_KEY[:4]}...")
         
-        message = (
-            f"🚨 HER-ASSIST EMERGENCY 🚨\n"
-            f"User: {woman_name}\n"
-            f"Status: SOS TRIGGERED\n"
-            f"Location: https://maps.google.com/?q={latitude},{longitude}\n"
-            f"Battery: {battery}%\n"
-            f"Action: Immediate assistance required!"
-        )
+        if custom_message:
+            message = custom_message
+        else:
+            message = (
+                f"🚨 HER-ASSIST EMERGENCY 🚨\n"
+                f"User: {woman_name}\n"
+                f"Status: SOS TRIGGERED\n"
+                f"Location: https://maps.google.com/?q={latitude},{longitude}\n"
+                f"Battery: {battery}%\n"
+                f"Action: Immediate assistance required!"
+            )
         
         payload = {
             'route': 'q',
@@ -64,7 +67,8 @@ def send_bulk_emergency_sms(contacts, woman_name, latitude, longitude, battery, 
             woman_name,
             latitude,
             longitude,
-            battery
+            battery,
+            custom_message=custom_message
         )
         results.append({
             'contact': contact['contact_name'],

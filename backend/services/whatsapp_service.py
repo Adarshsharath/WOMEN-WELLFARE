@@ -9,7 +9,7 @@ WHATSAPP_PHONE_ID = os.getenv('WHATSAPP_PHONE_ID')
 WHATSAPP_URL = f'https://graph.facebook.com/v17.0/{WHATSAPP_PHONE_ID}/messages'
 
 
-def send_emergency_whatsapp(phone_number, woman_name, latitude, longitude, battery):
+def send_emergency_whatsapp(phone_number, woman_name, latitude, longitude, battery, custom_message=None):
     """Send emergency WhatsApp message via WhatsApp Business API"""
     try:
         if not WHATSAPP_API_TOKEN or not WHATSAPP_PHONE_ID:
@@ -19,7 +19,10 @@ def send_emergency_whatsapp(phone_number, woman_name, latitude, longitude, batte
         # Format phone number (remove leading + if present)
         formatted_phone = phone_number.replace('+', '')
         
-        message_text = f"🚨 *EMERGENCY ALERT*\n\n{woman_name} has triggered an SOS!\n\n📍 Location: https://maps.google.com/?q={latitude},{longitude}\n🔋 Battery: {battery}%\n\n⚠️ Please respond immediately!"
+        if custom_message:
+            message_text = custom_message
+        else:
+            message_text = f"🚨 *EMERGENCY ALERT*\n\n{woman_name} has triggered an SOS!\n\n📍 Location: https://maps.google.com/?q={latitude},{longitude}\n🔋 Battery: {battery}%\n\n⚠️ Please respond immediately!"
         
         payload = {
             'messaging_product': 'whatsapp',
@@ -58,7 +61,8 @@ def send_bulk_emergency_whatsapp(contacts, woman_name, latitude, longitude, batt
             woman_name,
             latitude,
             longitude,
-            battery
+            battery,
+            custom_message=custom_message
         )
         results.append({
             'contact': contact['contact_name'],

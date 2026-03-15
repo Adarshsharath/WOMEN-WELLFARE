@@ -42,7 +42,7 @@ const CybersecurityMonitoring = () => {
         <div className="page-wrapper">
             <nav className="navbar">
                 <div className="navbar-container container">
-                    <div className="navbar-brand">Her-Assist Cybersecurity</div>
+                    <div className="navbar-brand">HerAssist Cybersecurity</div>
                     <button onClick={logout} className="btn btn-sm btn-secondary">Logout</button>
                 </div>
             </nav>

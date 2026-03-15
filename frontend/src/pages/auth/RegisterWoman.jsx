@@ -36,6 +36,20 @@ const RegisterWoman = () => {
             return;
         }
 
+        // Strict Email and Phone Validation
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const phoneRegex = /^\d{10}$/;
+
+        if (!emailRegex.test(formData.email)) {
+            setError('Invalid email format (e.g., user@example.com)');
+            return;
+        }
+
+        if (!phoneRegex.test(formData.phone)) {
+            setError('Phone number must be exactly 10 digits');
+            return;
+        }
+
         if (!document) {
             setError('Please upload a document for verification');
             return;
@@ -72,6 +86,7 @@ const RegisterWoman = () => {
                     className="glass-card"
                     style={{ maxWidth: '520px', width: '100%', padding: 'var(--space-2xl)' }}
                 >
+                    <h1 style={{ color: 'white', fontSize: '2.5rem', fontWeight: '800', marginBottom: '0.5rem' }}>HerAssist</h1>
                     <div style={{ textAlign: 'center', marginBottom: 'var(--space-xl)' }}>
                         <motion.h1
                             initial={{ opacity: 0 }}
@@ -89,7 +104,7 @@ const RegisterWoman = () => {
                             👩 Register as Woman
                         </motion.h1>
                         <p style={{ color: 'var(--gray-700)', fontSize: 'var(--font-size-base)', fontWeight: '500' }}>
-                            Create your Her-Assist account
+                            Create your HerAssist account
                         </p>
                     </div>
 
@@ -151,7 +166,8 @@ const RegisterWoman = () => {
                                 className="form-input"
                                 value={formData.phone}
                                 onChange={handleChange}
-                                placeholder="Enter your phone number"
+                                placeholder="Enter your 10-digit phone number"
+                                maxLength="10"
                                 required
                             />
                         </div>
