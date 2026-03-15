@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { authAPI } from '../../utils/api';
 
-const Login = () => {
+const Login = ({ type = 'women' }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
@@ -81,8 +81,12 @@ const Login = () => {
                             }}
                         >
                             <div style={{ marginBottom: 'var(--space-xl)', textAlign: 'center' }}>
-                                <h2 style={{ color: 'var(--gray-900)', fontSize: '1.8rem', fontWeight: '700', marginBottom: 'var(--space-xs)' }}>Women Login</h2>
-                                <p style={{ color: 'var(--gray-600)', fontWeight: '500' }}>Access your safety dashboard</p>
+                                <h2 style={{ color: 'var(--gray-900)', fontSize: '1.8rem', fontWeight: '700', marginBottom: 'var(--space-xs)' }}>
+                                    {type === 'community' ? 'Community Login' : type === 'admin' ? 'Admin Login' : 'Women Login'}
+                                </h2>
+                                <p style={{ color: 'var(--gray-600)', fontWeight: '500' }}>
+                                    {type === 'community' ? 'Access your community portal' : type === 'admin' ? 'Access the admin portal' : 'Access your safety dashboard'}
+                                </p>
                             </div>
 
                             {error && (
@@ -134,66 +138,99 @@ const Login = () => {
                                 </button>
                             </form>
 
-                            <div style={{ marginTop: 'var(--space-lg)', textAlign: 'center', borderTop: '1px solid #eee', paddingTop: 'var(--space-lg)' }}>
-                                <p style={{ color: '#666', marginBottom: 'var(--space-sm)', fontSize: '0.85rem' }}>New to HerAssist?</p>
-                                <Link to="/register/woman" className="btn btn-outline" style={{ width: '100%', borderColor: 'var(--primary)', color: 'var(--primary)', fontWeight: '600' }}>
-                                    Create New Account
-                                </Link>
-                            </div>
+                            {type !== 'admin' && (
+                                <div style={{ marginTop: 'var(--space-lg)', textAlign: 'center', borderTop: '1px solid #eee', paddingTop: 'var(--space-lg)' }}>
+                                    <p style={{ color: '#666', marginBottom: 'var(--space-sm)', fontSize: '0.85rem' }}>New to HerAssist?</p>
+                                    <Link to={type === 'community' ? '/register/community' : '/register/woman'} className="btn btn-outline" style={{ width: '100%', borderColor: 'var(--primary)', color: 'var(--primary)', fontWeight: '600' }}>
+                                        Create New Account
+                                    </Link>
+                                </div>
+                            )}
                         </motion.div>
 
-                        {/* 2. SECONDARY: COMMUNITY */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="glass-card"
-                            style={{
-                                padding: 'var(--space-lg)',
-                                background: 'rgba(31, 41, 55, 0.8)', // Darker for contrast
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: 'var(--space-md)',
-                                marginTop: 'var(--space-xl)',
-                                border: '1px solid rgba(255,255,255,0.1)'
-                            }}
-                        >
-                            <div style={{ color: 'white' }}>
-                                <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: 0 }}>🏢 Community Access</h3>
-                                <p style={{ fontSize: '0.8rem', opacity: 0.8, margin: 0 }}>Police & Support Teams</p>
-                            </div>
-                            <Link to="/register/community" className="btn btn-secondary btn-sm" style={{ background: 'white', color: '#1f2937' }}>
-                                Register / Login
-                            </Link>
-                        </motion.div>
+                        {/* 2. SECONDARY OPTIONS */}
+                        {type !== 'community' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="glass-card"
+                                style={{
+                                    padding: 'var(--space-lg)',
+                                    background: 'rgba(31, 41, 55, 0.8)', // Darker for contrast
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: 'var(--space-md)',
+                                    marginTop: 'var(--space-xl)',
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: 0 }}>🏢 Community Access</h3>
+                                    <p style={{ fontSize: '0.8rem', opacity: 0.8, margin: 0 }}>Police & Support Teams</p>
+                                </div>
+                                <Link to="/login/community" className="btn btn-secondary btn-sm" style={{ background: 'white', color: '#1f2937' }}>
+                                    Login
+                                </Link>
+                            </motion.div>
+                        )}
+
+                        {type !== 'women' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 }}
+                                className="glass-card"
+                                style={{
+                                    padding: 'var(--space-lg)',
+                                    background: 'rgba(31, 41, 55, 0.8)', // Darker for contrast
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'space-between',
+                                    gap: 'var(--space-md)',
+                                    marginTop: 'var(--space-xl)',
+                                    border: '1px solid rgba(255,255,255,0.1)'
+                                }}
+                            >
+                                <div style={{ color: 'white' }}>
+                                    <h3 style={{ fontSize: '1.1rem', fontWeight: '600', margin: 0 }}>👩 Women Access</h3>
+                                    <p style={{ fontSize: '0.8rem', opacity: 0.8, margin: 0 }}>Access safety dashboard</p>
+                                </div>
+                                <Link to="/login" className="btn btn-secondary btn-sm" style={{ background: 'white', color: '#1f2937' }}>
+                                    Login
+                                </Link>
+                            </motion.div>
+                        )}
 
                         {/* 3. TERTIARY: ADMIN */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            style={{ textAlign: 'center', marginTop: 'var(--space-lg)' }}
-                        >
-                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
-                                Admin
-                                <button
-                                    onClick={() => navigate('/login')}
-                                    style={{
-                                        background: 'none',
-                                        border: 'none',
-                                        color: 'white',
-                                        textDecoration: 'underline',
-                                        marginLeft: 'var(--space-xs)',
-                                        cursor: 'pointer',
-                                        fontSize: '0.85rem',
-                                        fontWeight: '600'
-                                    }}
-                                >
-                                    Admin Portal
-                                </button>
-                            </p>
-                        </motion.div>
+                        {type !== 'admin' && (
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                style={{ textAlign: 'center', marginTop: 'var(--space-lg)' }}
+                            >
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>
+                                    Admin
+                                    <button
+                                        onClick={() => navigate('/login/admin')}
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'white',
+                                            textDecoration: 'underline',
+                                            marginLeft: 'var(--space-xs)',
+                                            cursor: 'pointer',
+                                            fontSize: '0.85rem',
+                                            fontWeight: '600'
+                                        }}
+                                    >
+                                        Admin Portal
+                                    </button>
+                                </p>
+                            </motion.div>
+                        )}
 
                     </div>
                 </div>
